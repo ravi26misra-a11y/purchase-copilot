@@ -3,42 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Purchase Copilot Pro (Custom Software Columns & Advanced PO Engine)</title>
-    <!-- Tailwind CSS -->
+    <title>AI Purchase Copilot Pro (High Performance & ERP Columns)</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- SheetJS for Excel / CSV / XLS BIFF8 -->
     <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
-    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; }
-        @media print {
-            .no-print { display: none !important; }
-            .print-only { display: block !important; }
-        }
-        /* Custom scrollbars */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #f1f5f9; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        @media print { .no-print { display: none !important; } }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
 
-    <!-- Top Navbar -->
     <header class="bg-slate-900 text-white px-6 py-4 shadow-md no-print flex flex-wrap justify-between items-center gap-4">
         <div class="flex items-center space-x-3">
-            <div class="bg-blue-600 p-2.5 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/30">
+            <div class="bg-blue-600 p-2.5 rounded-xl shadow-lg shadow-blue-500/30">
                 <i data-lucide="calculator" class="w-6 h-6 text-white"></i>
             </div>
             <div>
                 <h1 class="text-xl font-bold tracking-tight">AI Purchase Copilot Pro</h1>
-                <p class="text-xs text-slate-400">Custom ERP Format (SS N 061126 + Purchase Register) • Multi-Division & Category PO</p>
+                <p class="text-xs text-slate-400">Direct ERP Parser (SS N 061126 + Purchase Register 19k Rows Supported)</p>
             </div>
         </div>
         <div class="flex items-center space-x-2">
-            <button onclick="openCategoryModal()" class="px-3.5 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white text-xs font-bold rounded-xl shadow-md flex items-center gap-2 transition">
+            <button onclick="openCategoryModal()" class="px-3.5 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 text-white text-xs font-bold rounded-xl shadow flex items-center gap-2">
                 <i data-lucide="tags" class="w-4 h-4"></i> Manage Categories (Add / Excel Upload)
             </button>
         </div>
@@ -46,52 +34,60 @@
 
     <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 space-y-6">
 
-        <!-- Upload & Settings Section -->
+        <!-- Upload Section -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 no-print">
             
-            <!-- File 1: Stock Statement (SS N 061126) -->
-            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between hover:border-blue-400 transition">
+            <!-- File 1: Stock Statement -->
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between">
                 <div>
                     <div class="flex items-center space-x-2 text-blue-600 font-semibold mb-1">
                         <i data-lucide="file-spreadsheet" class="w-5 h-5"></i>
-                        <span>1. Stock Statement File</span>
+                        <span>1. Stock Statement (SS N File)</span>
                     </div>
-                    <div class="text-[11px] text-slate-500 mb-3 space-y-0.5 bg-slate-50 p-2.5 rounded-xl border border-slate-100 font-mono">
-                        <div><b>B:</b> Division | <b>D:</b> Product Name</div>
-                        <div><b>E/F:</b> Month Sales | <b>K:</b> Duration Sale</div>
-                        <div><b>L:</b> Special Sale (-) | <b>T:</b> Closing Stock</div>
+                    <div class="text-[11px] text-slate-500 mb-3 space-y-0.5 bg-slate-50 p-2 rounded-lg font-mono">
+                        <div><b>B:</b> Division | <b>D:</b> Product</div>
+                        <div><b>K:</b> Duration Sale | <b>L:</b> Special Sale (-)</div>
+                        <div><b>T:</b> Closing Stock</div>
                     </div>
-                    <label class="flex flex-col items-center justify-center border-2 border-dashed border-slate-300 rounded-xl p-4 cursor-pointer hover:bg-slate-50 hover:border-blue-500 transition">
-                        <i data-lucide="upload-cloud" class="w-7 h-7 text-slate-400 mb-1"></i>
-                        <span class="text-xs font-medium text-slate-700 text-center" id="stockFileName">Upload SS File (.XLS / .XLSX)</span>
-                        <input type="file" id="stockFileInput" accept=".xlsx, .xls, .csv" class="hidden">
+                    <label for="stockFileInput" class="flex flex-col items-center justify-center border-2 border-dashed border-blue-300 rounded-xl p-4 cursor-pointer hover:bg-blue-50/50 transition">
+                        <i data-lucide="upload-cloud" class="w-8 h-8 text-blue-500 mb-1"></i>
+                        <span class="text-xs font-bold text-slate-700 text-center" id="stockFileName">Click to Select SS File</span>
+                        <span class="text-[10px] text-slate-400">Supports .XLS, .XLSX, .CSV</span>
                     </label>
+                    <input type="file" id="stockFileInput" class="hidden">
                 </div>
-                <div id="stockStats" class="mt-3 text-xs text-emerald-600 font-medium hidden flex items-center gap-1">
-                    <i data-lucide="check-circle" class="w-3.5 h-3.5"></i> Loaded: <span id="stockCount">0</span> SKUs
+                <div id="stockStats" class="mt-3 text-xs text-emerald-600 font-bold hidden flex items-center gap-1">
+                    <i data-lucide="check-circle" class="w-4 h-4"></i> Loaded: <span id="stockCount">0</span> SKUs
+                </div>
+                <div id="stockLoading" class="mt-3 text-xs text-blue-600 font-bold hidden animate-pulse">
+                    ⏳ Reading Stock File... Please wait...
                 </div>
             </div>
 
             <!-- File 2: Purchase Register -->
-            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between hover:border-indigo-400 transition">
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex flex-col justify-between">
                 <div>
                     <div class="flex items-center space-x-2 text-indigo-600 font-semibold mb-1">
                         <i data-lucide="history" class="w-5 h-5"></i>
                         <span>2. Purchase Register File</span>
                     </div>
-                    <div class="text-[11px] text-slate-500 mb-3 space-y-0.5 bg-slate-50 p-2.5 rounded-xl border border-slate-100 font-mono">
-                        <div><b>E:</b> Product Name | <b>F:</b> Date</div>
-                        <div><b>G:</b> Purchase Qty | <b>P:</b> Supplier Name</div>
-                        <div class="text-indigo-600 font-sans font-medium text-[10px]">Strictly No Rate Comparison (Frequency Only)</div>
+                    <div class="text-[11px] text-slate-500 mb-3 space-y-0.5 bg-slate-50 p-2 rounded-lg font-mono">
+                        <div><b>E:</b> Product | <b>F:</b> Date | <b>G:</b> Qty</div>
+                        <div><b>P:</b> Supplier (Bills Frequency Count)</div>
+                        <div class="text-indigo-600 font-bold text-[10px]">Optimized for 19,000+ Big Records</div>
                     </div>
-                    <label class="flex flex-col items-center justify-center border-2 border-dashed border-slate-300 rounded-xl p-4 cursor-pointer hover:bg-slate-50 hover:border-indigo-500 transition">
-                        <i data-lucide="upload-cloud" class="w-7 h-7 text-slate-400 mb-1"></i>
-                        <span class="text-xs font-medium text-slate-700 text-center" id="historyFileName">Upload Purchase Register (.XLS)</span>
-                        <input type="file" id="historyFileInput" accept=".xlsx, .xls, .csv" class="hidden">
+                    <label for="historyFileInput" class="flex flex-col items-center justify-center border-2 border-dashed border-indigo-300 rounded-xl p-4 cursor-pointer hover:bg-indigo-50/50 transition">
+                        <i data-lucide="upload-cloud" class="w-8 h-8 text-indigo-500 mb-1"></i>
+                        <span class="text-xs font-bold text-slate-700 text-center" id="historyFileName">Click to Select Purchase Register</span>
+                        <span class="text-[10px] text-slate-400">Supports .XLS, .XLSX, .CSV</span>
                     </label>
+                    <input type="file" id="historyFileInput" class="hidden">
                 </div>
-                <div id="historyStats" class="mt-3 text-xs text-emerald-600 font-medium hidden flex items-center gap-1">
-                    <i data-lucide="check-circle" class="w-3.5 h-3.5"></i> Loaded: <span id="historyCount">0</span> entries
+                <div id="historyStats" class="mt-3 text-xs text-emerald-600 font-bold hidden flex items-center gap-1">
+                    <i data-lucide="check-circle" class="w-4 h-4"></i> Loaded: <span id="historyCount">0</span> Bills
+                </div>
+                <div id="historyLoading" class="mt-3 text-xs text-indigo-600 font-bold hidden animate-pulse">
+                    ⏳ Reading 19,000+ rows... Please wait...
                 </div>
             </div>
 
@@ -105,7 +101,7 @@
                     <div class="space-y-3">
                         <div>
                             <div class="flex justify-between items-center text-[11px] font-semibold text-slate-600 uppercase">
-                                <span>Target Order Cover (Days)</span>
+                                <span>Target Order Cover</span>
                                 <span class="text-blue-600 font-bold" id="targetDaysVal">15 Days</span>
                             </div>
                             <input type="range" id="targetDays" min="7" max="45" value="15" class="w-full mt-1 accent-blue-600" oninput="document.getElementById('targetDaysVal').innerText = this.value + ' Days'">
@@ -116,31 +112,31 @@
                                 <span class="text-rose-600 font-bold" id="criticalDaysVal">5 Days</span>
                             </div>
                             <input type="range" id="criticalDays" min="1" max="10" value="5" class="w-full mt-1 accent-rose-600" oninput="document.getElementById('criticalDaysVal').innerText = this.value + ' Days'">
-                            <span class="text-[10px] text-slate-400 block mt-0.5">Critical Filter = Stock &lt; 5 Din ki daily sale</span>
+                            <span class="text-[10px] text-slate-400 block mt-0.5">Critical Filter = Stock &lt; 5 Din ki sale</span>
                         </div>
                     </div>
                 </div>
 
                 <div class="pt-4 flex flex-col gap-2">
-                    <button id="processBtn" class="w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm rounded-xl shadow-md shadow-blue-500/20 flex items-center justify-center gap-2 transition">
-                        <i data-lucide="refresh-cw" class="w-4 h-4"></i> Process & Generate PO
+                    <button id="processBtn" class="w-full py-2.5 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm rounded-xl shadow-md flex items-center justify-center gap-2 transition">
+                        <i data-lucide="refresh-cw" class="w-4 h-4"></i> Generate Purchase Orders
                     </button>
                     <button id="loadSampleBtn" class="w-full py-1 text-xs text-slate-500 hover:text-slate-800 font-medium underline text-center">
-                        Demo Test Data Load Karein
+                        Ya Test Demo Data Load Karein
                     </button>
                 </div>
             </div>
         </div>
 
-        <!-- Custom Category Quick Bar -->
+        <!-- Custom Category Pills Bar -->
         <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-3 no-print">
             <div class="flex items-center gap-2">
                 <i data-lucide="bookmark-check" class="w-4 h-4 text-indigo-600"></i>
-                <span class="text-xs font-bold text-slate-700 uppercase tracking-wider">Aapki Saved Categories:</span>
+                <span class="text-xs font-bold text-slate-700 uppercase tracking-wider">Saved Categories:</span>
             </div>
             <div id="categoryPillsList" class="flex flex-wrap items-center gap-2"></div>
             <button onclick="openCategoryModal()" class="text-xs text-indigo-600 hover:text-indigo-800 font-semibold underline flex items-center gap-1">
-                <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i> Manage / Upload Excel
+                <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i> Add / Excel Upload
             </button>
         </div>
 
@@ -148,11 +144,11 @@
         <div class="bg-white p-5 rounded-2xl shadow-sm border border-blue-200 bg-gradient-to-r from-blue-50/50 via-white to-indigo-50/30 no-print">
             <div class="flex items-center space-x-2 mb-3 text-blue-900 font-bold">
                 <i data-lucide="search" class="w-5 h-5 text-blue-600"></i>
-                <h3 class="text-base">Instant Product Search (Live Stock, Daily Sale, Suggested Order & Favourite Supplier)</h3>
+                <h3 class="text-base">Instant Product Search (Live Combined Stock, Daily Sale, Cover Days & Favourite Supplier)</h3>
             </div>
             <div class="relative">
-                <input type="text" id="productSearchInput" placeholder="Product ka naam type karein (e.g. BITATEL, DOLO, AUGMENTIN, PAN D)..." 
-                       class="w-full pl-11 pr-4 py-3 bg-white border border-slate-300 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-600 shadow-sm">
+                <input type="text" id="productSearchInput" placeholder="Product name type karein (e.g. BITATEL, DOLO, AUGMENTIN, PAN D, 1 AL)..." 
+                       class="w-full pl-11 pr-4 py-3 bg-white border border-slate-300 rounded-xl text-sm font-medium focus:ring-2 focus:ring-blue-600 shadow-sm">
                 <i data-lucide="search" class="w-5 h-5 text-slate-400 absolute left-3.5 top-3.5"></i>
             </div>
             <div id="productSearchResult" class="mt-4 hidden space-y-3"></div>
@@ -165,8 +161,7 @@
                     <i data-lucide="copy-check" class="w-5 h-5"></i>
                 </div>
                 <div class="flex-1">
-                    <h4 class="text-sm font-bold text-emerald-900">Smart Deduplication Report: <span id="mergedItemsCount">0</span> Duplicate Variations Merged!</h4>
-                    <p class="text-xs text-emerald-700 mt-0.5">Similar packings/codes ka stock aur sales apas me PLUS karke PO banaya gaya hai taaki extra order na ho.</p>
+                    <h4 class="text-sm font-bold text-emerald-900">Smart Deduplication: <span id="mergedItemsCount">0</span> Duplicate Variations Merged & Stock Combined!</h4>
                     <div id="mergedDetailsList" class="mt-2 text-xs text-emerald-800 space-y-1 font-mono max-h-32 overflow-y-auto"></div>
                 </div>
             </div>
@@ -192,44 +187,41 @@
             </div>
         </div>
 
-        <!-- PO Outputs Section with 3 Main Modes + Critical/Overall Sub-Filter -->
+        <!-- PO Outputs Section -->
         <div id="outputSection" class="hidden space-y-6">
 
-            <!-- Control Bar: Mode Selection + Critical/Overall Toggle + Division Multi-Select -->
+            <!-- Control Bar: Mode Selection + Scope Toggle -->
             <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4 no-print">
-                
-                <!-- Row 1: 3 Main PO Modes -->
                 <div class="flex flex-wrap items-center justify-between gap-4">
                     <div class="flex flex-wrap items-center gap-2">
                         <span class="text-xs font-bold text-slate-500 uppercase tracking-wider mr-1">1. PO Mode:</span>
-                        <button id="modeDivisionBtn" onclick="switchMode('DIVISION')" class="px-3.5 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow transition">
+                        <button id="modeDivisionBtn" onclick="switchMode('DIVISION')" class="px-3.5 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow">
                             <i data-lucide="layers" class="w-4 h-4"></i> Division-wise PO
                         </button>
-                        <button id="modeSupplierBtn" onclick="switchMode('SUPPLIER')" class="px-3.5 py-2 bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-xl text-xs font-bold flex items-center gap-1.5 transition">
+                        <button id="modeSupplierBtn" onclick="switchMode('SUPPLIER')" class="px-3.5 py-2 bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-xl text-xs font-bold flex items-center gap-1.5">
                             <i data-lucide="truck" class="w-4 h-4"></i> Supplier-wise PO
                         </button>
-                        <button id="modeCategoryBtn" onclick="switchMode('CATEGORY')" class="px-3.5 py-2 bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-xl text-xs font-bold flex items-center gap-1.5 transition">
+                        <button id="modeCategoryBtn" onclick="switchMode('CATEGORY')" class="px-3.5 py-2 bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-xl text-xs font-bold flex items-center gap-1.5">
                             <i data-lucide="tags" class="w-4 h-4"></i> Category-wise PO
                         </button>
                     </div>
 
-                    <!-- Row 2: Sub-filter (Critical vs Overall) -->
                     <div class="flex items-center space-x-2 bg-slate-100 p-1.5 rounded-xl border border-slate-200">
-                        <button id="scopeCriticalBtn" onclick="setScope('CRITICAL')" class="px-3 py-1.5 bg-rose-600 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-sm transition">
+                        <button id="scopeCriticalBtn" onclick="setScope('CRITICAL')" class="px-3 py-1.5 bg-rose-600 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-sm">
                             <i data-lucide="alert-triangle" class="w-3.5 h-3.5"></i> Critical Only (&lt; 5 Days)
                         </button>
-                        <button id="scopeOverallBtn" onclick="setScope('OVERALL')" class="px-3 py-1.5 text-slate-700 hover:bg-slate-200 rounded-lg text-xs font-bold flex items-center gap-1.5 transition">
+                        <button id="scopeOverallBtn" onclick="setScope('OVERALL')" class="px-3 py-1.5 text-slate-700 hover:bg-slate-200 rounded-lg text-xs font-bold flex items-center gap-1.5">
                             <i data-lucide="package" class="w-3.5 h-3.5"></i> Overall Products
                         </button>
                     </div>
                 </div>
 
-                <!-- Row 2 (Conditional): Multi-Division Selector (Only shown in DIVISION mode) -->
+                <!-- Division Multi-Select (Division Mode) -->
                 <div id="divisionSelectRow" class="pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3">
                     <div class="flex-1 min-w-[300px]">
                         <div class="flex items-center justify-between mb-1.5">
                             <label class="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
-                                <i data-lucide="check-square" class="w-4 h-4 text-blue-600"></i> Select Divisions (Ek ya Zyada Divisions Choose Karein):
+                                <i data-lucide="check-square" class="w-4 h-4 text-blue-600"></i> Select Divisions (Multi-Select Checkboxes):
                             </label>
                             <div class="space-x-2 text-[11px]">
                                 <button onclick="selectAllDivisions(true)" class="text-blue-600 font-semibold underline">Sabhi Select Karein</button>
@@ -237,30 +229,27 @@
                                 <button onclick="selectAllDivisions(false)" class="text-slate-500 font-semibold underline">Clear</button>
                             </div>
                         </div>
-                        <div id="divisionCheckboxContainer" class="flex flex-wrap gap-2 max-h-36 overflow-y-auto p-2 bg-slate-50 border border-slate-200 rounded-xl">
-                            <!-- Populated dynamically -->
-                        </div>
+                        <div id="divisionCheckboxContainer" class="flex flex-wrap gap-2 max-h-40 overflow-y-auto p-2 bg-slate-50 border border-slate-200 rounded-xl"></div>
                     </div>
                 </div>
 
-                <!-- Row 3 (Conditional for Supplier & Category Filters): Filter Dropdown -->
+                <!-- Filter Dropdown (Supplier / Category Mode) -->
                 <div id="dropdownFilterRow" class="hidden pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3">
                     <div class="flex items-center space-x-3">
                         <span id="filterLabel" class="text-xs font-bold text-slate-700 uppercase tracking-wider">Filter:</span>
-                        <select id="singleDropdownFilter" class="text-sm bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium">
+                        <select id="singleDropdownFilter" class="text-sm bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 font-medium">
                             <option value="ALL">Sabhi Dekhein (All)</option>
                         </select>
                     </div>
                     <div class="flex items-center space-x-2">
-                        <button id="exportAllExcelBtn" class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 shadow-sm transition">
+                        <button id="exportAllExcelBtn" class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 shadow">
                             <i data-lucide="file-spreadsheet" class="w-4 h-4"></i> Export to Excel
                         </button>
-                        <button onclick="window.print()" class="px-3.5 py-1.5 bg-slate-800 hover:bg-slate-900 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 shadow-sm transition">
+                        <button onclick="window.print()" class="px-3.5 py-1.5 bg-slate-800 hover:bg-slate-900 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 shadow">
                             <i data-lucide="printer" class="w-4 h-4"></i> Print PO
                         </button>
                     </div>
                 </div>
-
             </div>
 
             <!-- Dynamic Group Cards Container -->
@@ -269,10 +258,9 @@
 
     </main>
 
-    <!-- MODAL: ADVANCED CATEGORY MANAGER (CREATE / EXCEL UPLOAD / EDIT / AUTO-SAVE) -->
+    <!-- Category Manager Modal -->
     <div id="categoryModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white w-full max-w-3xl rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh]">
-            <!-- Modal Header -->
             <div class="bg-slate-900 text-white p-5 flex items-center justify-between">
                 <div class="flex items-center space-x-2.5">
                     <div class="p-2 bg-indigo-600 rounded-xl">
@@ -283,69 +271,61 @@
                         <p class="text-xs text-slate-400">Excel se Product List Upload karein ya Type karke Save karein</p>
                     </div>
                 </div>
-                <button onclick="closeCategoryModal()" class="text-slate-400 hover:text-white transition">
+                <button onclick="closeCategoryModal()" class="text-slate-400 hover:text-white">
                     <i data-lucide="x" class="w-5 h-5"></i>
                 </button>
             </div>
 
-            <!-- Modal Body -->
             <div class="p-6 overflow-y-auto space-y-6 flex-1">
-                
                 <!-- Excel Upload to Category -->
                 <div class="bg-indigo-50/50 p-4 rounded-2xl border border-indigo-200 space-y-3">
                     <h4 class="text-xs font-bold text-indigo-900 uppercase tracking-wider flex items-center gap-1.5">
                         <i data-lucide="file-up" class="w-4 h-4 text-indigo-600"></i> Excel Upload Se Category Me Product Add Karein
                     </h4>
-                    <p class="text-xs text-slate-600">Kisi bhi Excel / CSV file ko upload karein jisme product names hon, aur wo selected category me auto-add ho jayenge.</p>
+                    <p class="text-xs text-slate-600">Excel / CSV file upload karein jisme product names hon, wo selected category me auto-add ho jayenge.</p>
                     <div class="flex flex-wrap gap-2 items-center">
-                        <select id="modalUploadCatSelect" class="px-3 py-2 text-xs bg-white border border-slate-300 rounded-xl font-medium focus:ring-2 focus:ring-indigo-600">
-                            <!-- Populated with categories -->
-                        </select>
-                        <label class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl cursor-pointer flex items-center gap-1.5 shadow transition">
+                        <select id="modalUploadCatSelect" class="px-3 py-2 text-xs bg-white border border-slate-300 rounded-xl font-medium"></select>
+                        <label for="catExcelUploadInput" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl cursor-pointer flex items-center gap-1.5 shadow">
                             <i data-lucide="upload" class="w-4 h-4"></i> Choose Excel File
-                            <input type="file" id="catExcelUploadInput" accept=".xlsx, .xls, .csv" class="hidden">
                         </label>
+                        <input type="file" id="catExcelUploadInput" class="hidden">
                         <span id="catUploadStatus" class="text-xs font-semibold text-emerald-700 hidden"></span>
                     </div>
                 </div>
 
-                <!-- Create New Category -->
+                <!-- Create Category -->
                 <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-3">
                     <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
                         <i data-lucide="plus-circle" class="w-4 h-4 text-blue-600"></i> Nayi Category Banayein
                     </h4>
                     <div class="flex gap-2">
-                        <input type="text" id="newCategoryName" placeholder="Category Name (e.g. Most Running Products, High Profit Products)..." 
-                               class="flex-1 px-4 py-2 text-sm bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-600">
-                        <button onclick="addNewCategory()" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow transition">
+                        <input type="text" id="newCategoryName" placeholder="Category Name (e.g. Most Running Products, High Profit)..." 
+                               class="flex-1 px-4 py-2 text-sm bg-white border border-slate-300 rounded-xl">
+                        <button onclick="addNewCategory()" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow">
                             Add Category
                         </button>
                     </div>
                 </div>
 
-                <!-- Existing Categories List -->
                 <div>
-                    <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider mb-3">Aapki Categories & Tagged Products</h4>
+                    <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider mb-3">Saved Categories & Tagged Products</h4>
                     <div id="modalCategoryList" class="space-y-4"></div>
                 </div>
             </div>
 
-            <!-- Modal Footer -->
             <div class="p-4 bg-slate-50 border-t border-slate-200 flex justify-between items-center text-xs">
                 <span class="text-slate-500">Yeh categories browser me <b>permanently saved</b> rahengi.</span>
-                <button onclick="closeCategoryModal()" class="px-5 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl transition">
+                <button onclick="closeCategoryModal()" class="px-5 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl">
                     Done / Save Changes
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Footer -->
     <footer class="mt-auto py-4 text-center text-xs text-slate-500 border-t border-slate-200 no-print">
-        AI Purchase Copilot Pro • Sharda Medical Agency • Exact Software Logic (No Rate Comparison)
+        AI Purchase Copilot Pro • Sharda Medical Agency • High Performance Fast Parser
     </footer>
 
-    <!-- App Engine Logic -->
     <script>
         let rawStockData = [];
         let rawPurchData = [];
@@ -356,55 +336,45 @@
         let categoryMap = {};
         let allDivisionsList = [];
         let selectedDivisions = new Set();
-        let currentMode = "DIVISION"; // 'DIVISION', 'SUPPLIER', or 'CATEGORY'
-        let currentScope = "CRITICAL"; // 'CRITICAL' (<5 days cover) or 'OVERALL'
+        let currentMode = "DIVISION";
+        let currentScope = "CRITICAL";
 
-        // Default Categories in LocalStorage
         const DEFAULT_CATEGORIES = {
             "Most Running Products": ["BITATEL", "DOLO 650", "AUGMENTIN", "PAN D", "AZITHRAL"],
-            "High Profit Products": ["SHELCAL", "CHYMORAL", "GLYCOMET", "TELMA"],
-            "Critical Emergency": ["INSULIN", "INJECTION", "CLAVAM"]
+            "High Profit Products": ["SHELCAL", "CHYMORAL", "GLYCOMET", "TELMA"]
         };
 
         function getStoredCategories() {
             try {
-                const stored = localStorage.getItem("copilot_custom_categories_v5");
+                const stored = localStorage.getItem("copilot_categories_v6");
                 return stored ? JSON.parse(stored) : DEFAULT_CATEGORIES;
-            } catch(e) {
-                return DEFAULT_CATEGORIES;
-            }
+            } catch(e) { return DEFAULT_CATEGORIES; }
         }
 
         function saveStoredCategories(categories) {
-            localStorage.setItem("copilot_custom_categories_v5", JSON.stringify(categories));
+            localStorage.setItem("copilot_categories_v6", JSON.stringify(categories));
             renderCategoryPills();
             updateModalCategoryDropdown();
         }
 
         let customCategories = getStoredCategories();
-
         lucide.createIcons();
 
-        // ---------------------------------------------------------
-        // NLP Pharma Normalization Engine
-        // ---------------------------------------------------------
         function cleanString(str) {
             if (!str) return "";
-            return String(str).replace(/\x00/g, '').trim();
+            return String(str).replace(/\0/g, '').replace(/\x00/g, '').trim();
         }
 
         function normalizeProductName(str) {
             if (!str) return "";
             let s = cleanString(str).toLowerCase();
-            s = s.replace(/[\.\,\/\-\_\(\)\[\]]/g, ' ');
+            s = s.replace(/[\.\,\/\-\_\(\)\[\]@]/g, ' ');
             s = s.replace(/(\d+)\s*(mg|gm|ml|mcg|iu)/g, '$1$2');
             s = s.replace(/(\d+)mg/g, '$1');
             s = s.replace(/\b(tablets|tablet|tabs|tab|tb)\b/g, 'tab');
             s = s.replace(/\b(capsules|capsule|cap|caps)\b/g, 'cap');
             s = s.replace(/\b(syrup|syp|suspension|susp)\b/g, 'syp');
-            s = s.replace(/\b(injection|inj)\b/g, 'inj');
-            s = s.replace(/\b(ointment|oint|gel|cream)\b/g, 'oint');
-            let coreKey = s.replace(/\b(tab|cap|syp|inj|oint)\b/g, '');
+            let coreKey = s.replace(/\b(tab|cap|syp)\b/g, '');
             let tokens = coreKey.split(/\s+/).filter(t => t.length > 0);
             tokens.sort();
             return tokens.join(' ');
@@ -416,21 +386,16 @@
             return isNaN(n) ? 0 : n;
         }
 
-        // ---------------------------------------------------------
-        // Category Pills & Modal Handling
-        // ---------------------------------------------------------
         function renderCategoryPills() {
             const container = document.getElementById('categoryPillsList');
             container.innerHTML = "";
-            const catKeys = Object.keys(customCategories);
-
-            catKeys.forEach(catName => {
+            Object.keys(customCategories).forEach(catName => {
                 const pill = document.createElement('span');
                 pill.className = "inline-flex items-center gap-1.5 px-3 py-1 bg-indigo-50 border border-indigo-200 text-indigo-800 text-xs font-semibold rounded-full";
                 pill.innerHTML = `<span>${catName} (${customCategories[catName].length})</span>`;
                 container.appendChild(pill);
             });
-            document.getElementById('statCategoryCount').innerText = catKeys.length;
+            document.getElementById('statCategoryCount').innerText = Object.keys(customCategories).length;
         }
         renderCategoryPills();
 
@@ -442,9 +407,7 @@
 
         window.closeCategoryModal = function() {
             document.getElementById('categoryModal').classList.add('hidden');
-            if (rawStockData.length > 0) {
-                runEngine();
-            }
+            if (rawStockData.length > 0) runEngine();
         };
 
         function updateModalCategoryDropdown() {
@@ -461,14 +424,7 @@
         function renderModalCategories() {
             const list = document.getElementById('modalCategoryList');
             list.innerHTML = "";
-            const catKeys = Object.keys(customCategories);
-
-            if (catKeys.length === 0) {
-                list.innerHTML = `<p class="text-xs text-slate-400">Abhi tak koi category nahi banayi gayi hai.</p>`;
-                return;
-            }
-
-            catKeys.forEach(cat => {
+            Object.keys(customCategories).forEach(cat => {
                 const items = customCategories[cat] || [];
                 const catCard = document.createElement('div');
                 catCard.className = "bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3";
@@ -477,24 +433,22 @@
                         <div class="flex items-center space-x-2">
                             <span class="w-2.5 h-2.5 rounded-full bg-indigo-600"></span>
                             <h5 class="text-sm font-bold text-slate-900">${cat}</h5>
-                            <span class="text-xs text-slate-500 font-medium">(${items.length} products)</span>
+                            <span class="text-xs text-slate-500">(${items.length} products)</span>
                         </div>
                         <button onclick="deleteCategory('${encodeURIComponent(cat)}')" class="text-rose-600 hover:text-rose-800 text-xs font-medium flex items-center gap-1">
-                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Delete Category
+                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Delete
                         </button>
                     </div>
-
                     <div class="flex gap-2">
-                        <input type="text" id="addProd_${encodeURIComponent(cat)}" placeholder="Product ka naam type karein..." 
-                               class="flex-1 px-3 py-1.5 text-xs bg-slate-50 border border-slate-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-600">
-                        <button onclick="addProductToCategory('${encodeURIComponent(cat)}')" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-900 text-white text-xs font-semibold rounded-lg transition">
+                        <input type="text" id="addProd_${encodeURIComponent(cat)}" placeholder="Product name type karein..." 
+                               class="flex-1 px-3 py-1.5 text-xs bg-slate-50 border border-slate-300 rounded-lg">
+                        <button onclick="addProductToCategory('${encodeURIComponent(cat)}')" class="px-3 py-1.5 bg-slate-800 text-white text-xs font-semibold rounded-lg">
                             Add Product
                         </button>
                     </div>
-
                     <div class="flex flex-wrap gap-1.5 max-h-32 overflow-y-auto p-1 bg-slate-50 rounded-xl border border-slate-100">
                         ${items.map(p => `
-                            <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-white text-slate-800 rounded-lg text-xs font-medium border border-slate-200 shadow-2xs">
+                            <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-white text-slate-800 rounded-lg text-xs font-medium border border-slate-200">
                                 <span>${p}</span>
                                 <button onclick="removeProductFromCategory('${encodeURIComponent(cat)}', '${encodeURIComponent(p)}')" class="text-slate-400 hover:text-rose-600">
                                     <i data-lucide="x" class="w-3 h-3"></i>
@@ -505,18 +459,13 @@
                 `;
                 list.appendChild(catCard);
             });
-
             lucide.createIcons();
         }
 
         window.addNewCategory = function() {
             const input = document.getElementById('newCategoryName');
             const name = input.value.trim();
-            if (!name) return;
-            if (customCategories[name]) {
-                alert("Yeh category pehle se bani hui hai!");
-                return;
-            }
+            if (!name || customCategories[name]) return;
             customCategories[name] = [];
             saveStoredCategories(customCategories);
             input.value = "";
@@ -525,7 +474,7 @@
 
         window.deleteCategory = function(encodedCat) {
             const cat = decodeURIComponent(encodedCat);
-            if (confirm(`Kya aap category "${cat}" ko delete karna chahte hain?`)) {
+            if (confirm(`Delete category "${cat}"?`)) {
                 delete customCategories[cat];
                 saveStoredCategories(customCategories);
                 renderModalCategories();
@@ -537,7 +486,6 @@
             const input = document.getElementById(`addProd_${encodedCat}`);
             const prod = input.value.trim().toUpperCase();
             if (!prod) return;
-
             if (!customCategories[cat].includes(prod)) {
                 customCategories[cat].push(prod);
                 saveStoredCategories(customCategories);
@@ -554,30 +502,24 @@
             renderModalCategories();
         };
 
-        // EXCEL UPLOAD FOR CATEGORY PRODUCTS
+        // EXCEL UPLOAD FOR CATEGORY PRODUCTS (Fast ArrayBuffer)
         document.getElementById('catExcelUploadInput').addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (!file) return;
             const targetCat = document.getElementById('modalUploadCatSelect').value;
-            if (!targetCat) {
-                alert("Kripya pehle category select karein!");
-                return;
-            }
-
             const reader = new FileReader();
             reader.onload = function(evt) {
                 try {
-                    const wb = XLSX.read(evt.target.result, { type: 'binary' });
+                    const data = new Uint8Array(evt.target.result);
+                    const wb = XLSX.read(data, { type: 'array' });
                     const ws = wb.Sheets[wb.SheetNames[0]];
                     const json = XLSX.utils.sheet_to_json(ws, { header: 1 });
-                    
                     let addedCount = 0;
                     json.forEach(row => {
-                        if (!row || row.length === 0) return;
-                        // Search in first 5 columns for valid string
-                        for (let colIdx = 0; colIdx < Math.min(row.length, 5); colIdx++) {
-                            const val = cleanString(row[colIdx]);
-                            if (val && val.length > 2 && !val.toLowerCase().includes('product') && !val.toLowerCase().includes('item')) {
+                        if (!row) return;
+                        for (let c = 0; c < Math.min(row.length, 6); c++) {
+                            const val = cleanString(row[c]);
+                            if (val && val.length > 2 && !val.toLowerCase().includes('item') && !val.toLowerCase().includes('name')) {
                                 const prodUpper = val.toUpperCase();
                                 if (!customCategories[targetCat].includes(prodUpper)) {
                                     customCategories[targetCat].push(prodUpper);
@@ -587,89 +529,93 @@
                             }
                         }
                     });
-
                     saveStoredCategories(customCategories);
                     renderModalCategories();
                     const statusEl = document.getElementById('catUploadStatus');
-                    statusEl.innerText = `✓ ${addedCount} products category "${targetCat}" me add ho gaye!`;
+                    statusEl.innerText = `✓ ${addedCount} products added to "${targetCat}"!`;
                     statusEl.classList.remove('hidden');
-                } catch(err) {
-                    alert("Excel file read karne me dikkat hui: " + err.message);
-                }
+                } catch(err) { alert("File error: " + err.message); }
             };
-            reader.readAsBinaryString(file);
+            reader.readAsArrayBuffer(file);
         });
 
-        // ---------------------------------------------------------
-        // File Readers (Stock Statement & Purchase Register)
-        // ---------------------------------------------------------
+        // FAST FILE READERS WITH ARRAYBUFFER
         document.getElementById('stockFileInput').addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (!file) return;
             document.getElementById('stockFileName').innerText = file.name;
+            document.getElementById('stockLoading').classList.remove('hidden');
+            document.getElementById('stockStats').classList.add('hidden');
+
             const reader = new FileReader();
             reader.onload = function(evt) {
-                try {
-                    const wb = XLSX.read(evt.target.result, { type: 'binary' });
-                    const ws = wb.Sheets[wb.SheetNames[0]];
-                    // Read raw 2D array (header: 1)
-                    rawStockData = XLSX.utils.sheet_to_json(ws, { header: 1 });
-                    document.getElementById('stockStats').classList.remove('hidden');
-                    document.getElementById('stockCount').innerText = Math.max(0, rawStockData.length - 1);
-                } catch(err) {
-                    alert("Stock file load karne me error: " + err.message);
-                }
+                setTimeout(() => {
+                    try {
+                        const data = new Uint8Array(evt.target.result);
+                        const wb = XLSX.read(data, { type: 'array', dense: true });
+                        const ws = wb.Sheets[wb.SheetNames[0]];
+                        rawStockData = XLSX.utils.sheet_to_json(ws, { header: 1 });
+                        document.getElementById('stockLoading').classList.add('hidden');
+                        document.getElementById('stockStats').classList.remove('hidden');
+                        document.getElementById('stockCount').innerText = Math.max(0, rawStockData.length - 1);
+                    } catch(err) {
+                        document.getElementById('stockLoading').classList.add('hidden');
+                        alert("Stock file load karne me error: " + err.message);
+                    }
+                }, 50);
             };
-            reader.readAsBinaryString(file);
+            reader.readAsArrayBuffer(file);
         });
 
         document.getElementById('historyFileInput').addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (!file) return;
             document.getElementById('historyFileName').innerText = file.name;
+            document.getElementById('historyLoading').classList.remove('hidden');
+            document.getElementById('historyStats').classList.add('hidden');
+
             const reader = new FileReader();
             reader.onload = function(evt) {
-                try {
-                    const wb = XLSX.read(evt.target.result, { type: 'binary' });
-                    const ws = wb.Sheets[wb.SheetNames[0]];
-                    rawPurchData = XLSX.utils.sheet_to_json(ws, { header: 1 });
-                    document.getElementById('historyStats').classList.remove('hidden');
-                    document.getElementById('historyCount').innerText = Math.max(0, rawPurchData.length - 1);
-                } catch(err) {
-                    alert("Purchase Register file load karne me error: " + err.message);
-                }
+                setTimeout(() => {
+                    try {
+                        const data = new Uint8Array(evt.target.result);
+                        const wb = XLSX.read(data, { type: 'array', dense: true });
+                        const ws = wb.Sheets[wb.SheetNames[0]];
+                        rawPurchData = XLSX.utils.sheet_to_json(ws, { header: 1 });
+                        document.getElementById('historyLoading').classList.add('hidden');
+                        document.getElementById('historyStats').classList.remove('hidden');
+                        document.getElementById('historyCount').innerText = Math.max(0, rawPurchData.length - 1);
+                    } catch(err) {
+                        document.getElementById('historyLoading').classList.add('hidden');
+                        alert("Purchase Register file load karne me error: " + err.message);
+                    }
+                }, 50);
             };
-            reader.readAsBinaryString(file);
+            reader.readAsArrayBuffer(file);
         });
 
-        // Demo Data Loader (Matches Exact User Column Positions)
+        // Demo Data Loader
         document.getElementById('loadSampleBtn').addEventListener('click', function() {
-            // Col B(1): Division, Col D(3): Product Name, Col E(4): M1, Col F(5): M2, Col K(10): Duration Sale, Col L(11): Special Sale, Col T(19): Closing Stock
             rawStockData = [
                 ["item_code", "mfac_name", "stock_c_item_code", "c_name", "n1", "n1_1", "n1_2", "n1_3", "n1_4", "n1_5", "n1_6", "n1_7", "n1_8", "n1_9", "n1_10", "n1_11", "n1_12", "n1_13", "n1_14", "n1_15"],
-                ["MD0001", "4 CARE LIFESCIENCE", "P07176", "BITATEL 40 TAB (DIS 6%) - 10 TAB", 34, 53, 0, 0, 0, 0, 51, 0, 0, 0, 0, 0, 0, 0, 0, 15], // Stock: 15, Sale: ~51/30=1.7/day -> Cover ~8.8 days
-                ["MD0001", "4 CARE LIFESCIENCE", "P07177", "BITATEL AM TAB (DIS 6%) - 10 TAB", 98, 65, 0, 0, 0, 0, 71, 0, 0, 0, 0, 0, 0, 0, 0, 6],  // Stock: 6, Sale: ~71/30=2.36/day -> Cover 2.5 days (CRITICAL!)
-                ["MD0001", "4 CARE LIFESCIENCE", "P07465", "BITATEL M 50 TAB (DIS 6%) - 10 TAB", 112, 57, 0, 0, 0, 0, 204, 50, 0, 0, 0, 0, 0, 0, 0, 12], // Duration 204 - Special 50 = 154 net sale / 30 = 5.1/day -> Stock 12 -> Cover 2.3 days (CRITICAL!)
-                ["MD0002", "ABBOT HEALTHCARE JANUS", "P08101", "DOLO 650 MG TAB - 15 TAB", 40, 50, 0, 0, 0, 0, 180, 0, 0, 0, 0, 0, 0, 0, 0, 10], // Stock 10, Sale: 6/day -> Cover 1.6 days (CRITICAL!)
-                ["MD0002", "ABBOT HEALTHCARE JANUS", "P08102", "DOLO 650 TAB - 15 TAB", 50, 40, 0, 0, 0, 0, 150, 0, 0, 0, 0, 0, 0, 0, 0, 8],   // Duplicate of Dolo! (Will merge: total stock 10+8=18, combined sale 330)
-                ["MD0002", "ABBOT HEALTHCARE JANUS", "P08103", "CREMAFFIN PLUS SYRUP 225ML", 20, 25, 0, 0, 0, 0, 60, 0, 0, 0, 0, 0, 0, 0, 0, 45], // Stock 45, Sale 2/day -> Cover 22.5 days (SUFFICIENT)
-                ["MD0003", "ZYDUS CADILA CARDIO", "P09201", "AUGMENTIN 625 DUO TAB", 120, 140, 0, 0, 0, 0, 300, 0, 0, 0, 0, 0, 0, 0, 0, 14], // Stock 14, Sale 10/day -> Cover 1.4 days (CRITICAL!)
-                ["MD0003", "ZYDUS CADILA CARDIO", "P09202", "PAN D CAPSULE", 200, 180, 0, 0, 0, 0, 450, 0, 0, 0, 0, 0, 0, 0, 0, 25], // Stock 25, Sale 15/day -> Cover 1.6 days (CRITICAL!)
-                ["MD0003", "ZYDUS CADILA CARDIO", "P09203", "SHELCAL 500 TABLET", 80, 90, 0, 0, 0, 0, 240, 0, 0, 0, 0, 0, 0, 0, 0, 150] // Stock 150, Sale 8/day -> Cover 18.7 days (SUFFICIENT)
+                ["MD0001", "4 CARE LIFESCIENCE", "P07176", "BITATEL 40 TAB (DIS 6%) - 10 TAB", 34, 53, 0, 0, 0, 0, 51, 0, 0, 0, 0, 0, 0, 0, 0, 15],
+                ["MD0001", "4 CARE LIFESCIENCE", "P07177", "BITATEL AM TAB (DIS 6%) - 10 TAB", 98, 65, 0, 0, 0, 0, 71, 0, 0, 0, 0, 0, 0, 0, 0, 6],
+                ["MD0001", "4 CARE LIFESCIENCE", "P07465", "BITATEL M 50 TAB (DIS 6%) - 10 TAB", 112, 57, 0, 0, 0, 0, 204, 50, 0, 0, 0, 0, 0, 0, 0, 12],
+                ["MD0002", "ABBOT HEALTHCARE JANUS", "P08101", "DOLO 650 MG TAB - 15 TAB", 40, 50, 0, 0, 0, 0, 180, 0, 0, 0, 0, 0, 0, 0, 0, 10],
+                ["MD0002", "ABBOT HEALTHCARE JANUS", "P08102", "DOLO 650 TAB - 15 TAB", 50, 40, 0, 0, 0, 0, 150, 0, 0, 0, 0, 0, 0, 0, 0, 8],
+                ["MD0003", "ZYDUS CADILA CARDIO", "P09201", "AUGMENTIN 625 DUO TAB", 120, 140, 0, 0, 0, 0, 300, 0, 0, 0, 0, 0, 0, 0, 0, 14],
+                ["MD0003", "ZYDUS CADILA CARDIO", "P09202", "PAN D CAPSULE", 200, 180, 0, 0, 0, 0, 450, 0, 0, 0, 0, 0, 0, 0, 0, 25]
             ];
 
-            // Purchase Register: Col E(4): Product Name, Col F(5): Date, Col G(6): Qty, Col P(15): Supplier
             rawPurchData = [
                 ["A", "B", "C", "D", "Product Name", "Date", "Qty", "H", "I", "J", "K", "L", "M", "N", "O", "Supplier"],
-                ["", "", "", "", "BITATEL 40 TAB (DIS 6%) - 10 TAB", "01/10/2026", 100, "", "", "", "", "", "", "", "", "SUN PHARMA DISTRIBUTORS"],
-                ["", "", "", "", "BITATEL 40 TAB (DIS 6%) - 10 TAB", "15/10/2026", 100, "", "", "", "", "", "", "", "", "SUN PHARMA DISTRIBUTORS"],
+                ["", "", "", "", "BITATEL 40 TAB (DIS 6%) - 10 TAB", "01/10/2026", 100, "", "", "", "", "", "", "", "", "SHARDA PHARMA (PURCHASE)"],
+                ["", "", "", "", "BITATEL 40 TAB (DIS 6%) - 10 TAB", "15/10/2026", 100, "", "", "", "", "", "", "", "", "SHARDA PHARMA (PURCHASE)"],
                 ["", "", "", "", "BITATEL AM TAB (DIS 6%) - 10 TAB", "05/10/2026", 150, "", "", "", "", "", "", "", "", "SUN PHARMA DISTRIBUTORS"],
-                ["", "", "", "", "BITATEL M 50 TAB (DIS 6%) - 10 TAB", "10/10/2026", 200, "", "", "", "", "", "", "", "", "SUN PHARMA DISTRIBUTORS"],
                 ["", "", "", "", "DOLO 650 MG TAB - 15 TAB", "02/10/2026", 500, "", "", "", "", "", "", "", "", "MICRO LABS AGENCY"],
                 ["", "", "", "", "DOLO 650 TAB - 15 TAB", "12/10/2026", 400, "", "", "", "", "", "", "", "", "MICRO LABS AGENCY"],
                 ["", "", "", "", "AUGMENTIN 625 DUO TAB", "04/10/2026", 300, "", "", "", "", "", "", "", "", "GLAXO SMITHKLINE DEPOT"],
-                ["", "", "", "", "PAN D CAPSULE", "07/10/2026", 400, "", "", "", "", "", "", "", "", "ALKEM LABORATORIES AGENCY"],
-                ["", "", "", "", "SHELCAL 500 TABLET", "08/10/2026", 250, "", "", "", "", "", "", "", "", "TORRENT PHARMA DEPOT"]
+                ["", "", "", "", "PAN D CAPSULE", "07/10/2026", 400, "", "", "", "", "", "", "", "", "ALKEM LABORATORIES AGENCY"]
             ];
 
             document.getElementById('stockFileName').innerText = "SS_N_061126_Demo.XLS";
@@ -682,31 +628,25 @@
             runEngine();
         });
 
-        // ---------------------------------------------------------
-        // Core Processing Engine
-        // ---------------------------------------------------------
         document.getElementById('processBtn').addEventListener('click', runEngine);
 
         function runEngine() {
             if (rawStockData.length === 0) {
-                alert("Kripya pehle Stock Statement upload karein ya Demo Data load karein!");
+                alert("Kripya pehle Stock Statement (SS N file) upload karein!");
                 return;
             }
 
             const targetDays = parseFloat(document.getElementById('targetDays').value) || 15;
             const criticalDays = parseFloat(document.getElementById('criticalDays').value) || 5;
 
-            // 1. Process Purchase Register (Strictly Frequency Only, Rate Completely Ignored)
-            // User Mapping: Col E(4): Product Name, Col P(15): Supplier
+            // 1. Process Purchase Register (Strictly frequency / bills count)
+            // Col E(4): Product Name, Col P(15): Supplier
             const normItemSupplierFreq = {};
-
             for (let r = 1; r < rawPurchData.length; r++) {
                 const row = rawPurchData[r];
                 if (!row || row.length === 0) continue;
-
-                const prodRaw = cleanString(row[4]); // Col E
-                const suppRaw = cleanString(row[15]); // Col P
-
+                const prodRaw = cleanString(row[4]);
+                const suppRaw = cleanString(row[15]);
                 if (prodRaw && suppRaw) {
                     const normKey = normalizeProductName(prodRaw);
                     if (!normItemSupplierFreq[normKey]) normItemSupplierFreq[normKey] = {};
@@ -714,14 +654,9 @@
                 }
             }
 
-            // 2. Process Stock Statement with Exact User Columns:
-            // Col B(1): Division
-            // Col D(3): Product Name
-            // Col E(4): Month 1 Sale
-            // Col F(5): Month 2 Sale
-            // Col K(10): Given Duration Sale
-            // Col L(11): Special Sale (Subtract from sale)
-            // Col T(19): Closing Stock
+            // 2. Process Stock Statement:
+            // Col B(1): Division | Col D(3): Product Name | Col E(4): M1 | Col F(5): M2
+            // Col K(10): Duration Sale | Col L(11): Special Sale | Col T(19): Closing Stock
             const mergedStockMap = {};
             const deduplicationAudit = [];
             const divisionsSet = new Set();
@@ -742,8 +677,6 @@
                 const specialSale = parseNum(row[11]);
                 const closingStock = parseNum(row[19]);
 
-                // Calculate Net Sales: Duration Sale minus Special Sale
-                // If duration sale is given, use duration net; otherwise fallback to average of month 1 & 2
                 let netSale = 0;
                 if (durationSale > 0) {
                     netSale = Math.max(0, durationSale - specialSale);
@@ -751,9 +684,7 @@
                     netSale = Math.max(0, ((m1Sale + m2Sale) / 2) - specialSale);
                 }
 
-                // Daily Sales estimate (assuming 30 days period)
                 const dailySale = netSale > 0 ? (netSale / 30) : 0;
-
                 const normKey = normalizeProductName(prodName);
 
                 if (!mergedStockMap[normKey]) {
@@ -767,9 +698,7 @@
                         normKey: normKey
                     };
                 } else {
-                    // Duplicate found -> PLUS STOCK & PLUS SALES
                     const existing = mergedStockMap[normKey];
-                    const prevStock = existing.closingStock;
                     existing.closingStock += closingStock;
                     existing.netSale += netSale;
                     existing.dailySale += dailySale;
@@ -786,19 +715,18 @@
 
             allDivisionsList = Array.from(divisionsSet).sort();
             if (selectedDivisions.size === 0) {
-                // By default select all
                 allDivisionsList.forEach(d => selectedDivisions.add(d));
             }
             renderDivisionCheckboxes();
 
-            // Deduplication Alert
+            // Deduplication alert
             const alertBox = document.getElementById('dedupAlertBox');
             const detailsList = document.getElementById('mergedDetailsList');
             if (deduplicationAudit.length > 0) {
                 alertBox.classList.remove('hidden');
                 document.getElementById('mergedItemsCount').innerText = deduplicationAudit.length;
                 detailsList.innerHTML = deduplicationAudit.map(d => `
-                    <div>• Merged: <b>"${d.mergedVariation}"</b> (+${d.addedStock} stock) $\rightarrow$ Combined in <b>"${d.masterName}"</b> (Total Stock: ${d.totalStock})</div>
+                    <div>• Merged: <b>"${d.mergedVariation}"</b> (+${d.addedStock} stock) -> Combined in <b>"${d.masterName}"</b> (Total Stock: ${d.totalStock})</div>
                 `).join('');
             } else {
                 alertBox.classList.add('hidden');
@@ -816,26 +744,19 @@
             Object.values(mergedStockMap).forEach(item => {
                 const stock = item.closingStock;
                 const daily = item.dailySale;
-
-                // Cover Days = Current Stock / Daily Sale
                 const coverDays = daily > 0 ? (stock / daily) : (stock > 0 ? 999 : 0);
-
-                // Is Critical? Less than criticalDays (5 days)
                 const isCritical = coverDays < criticalDays;
                 if (isCritical) criticalCount++;
 
-                // Does it need reorder?
-                // Reorder if stock is less than targetDays cover (e.g. 15 days) OR critical
                 const needsReorder = (daily > 0 && stock < (daily * targetDays)) || (daily === 0 && stock === 0);
 
                 let suggestedQty = 0;
                 if (daily > 0) {
                     suggestedQty = Math.max(0, Math.ceil((daily * targetDays) - stock));
                 } else if (stock === 0) {
-                    suggestedQty = 20; // default minimum lot
+                    suggestedQty = 20;
                 }
 
-                // Determine Favourite Supplier (Strictly highest bills)
                 const suppFreq = normItemSupplierFreq[item.normKey] || {};
                 let maxOrders = -1;
                 let topSupplier = "Direct / Unassigned Supplier";
@@ -847,18 +768,13 @@
                 }
                 const orderCount = maxOrders > 0 ? maxOrders : 0;
 
-                // Match with Custom Categories
                 const matchedCategories = [];
                 for (let catName in customCategories) {
                     const keywords = customCategories[catName];
                     const isMatched = keywords.some(k => item.normKey.includes(normalizeProductName(k)) || item.primaryName.toUpperCase().includes(k.toUpperCase()));
-                    if (isMatched) {
-                        matchedCategories.push(catName);
-                    }
+                    if (isMatched) matchedCategories.push(catName);
                 }
-                if (matchedCategories.length === 0) {
-                    matchedCategories.push("Other Products");
-                }
+                if (matchedCategories.length === 0) matchedCategories.push("Other Products");
 
                 const productObj = {
                     itemName: item.primaryName,
@@ -878,19 +794,15 @@
 
                 cleanProductsMaster.push(productObj);
 
-                // Reorder Bucket
                 if (needsReorder && suggestedQty > 0) {
                     calculatedOrders.push(productObj);
 
-                    // Group by Supplier
                     if (!supplierMap[topSupplier]) supplierMap[topSupplier] = [];
                     supplierMap[topSupplier].push(productObj);
 
-                    // Group by Division
                     if (!divisionMap[item.division]) divisionMap[item.division] = [];
                     divisionMap[item.division].push(productObj);
 
-                    // Group by Custom Category
                     matchedCategories.forEach(catName => {
                         if (!categoryMap[catName]) categoryMap[catName] = [];
                         categoryMap[catName].push(productObj);
@@ -898,7 +810,6 @@
                 }
             });
 
-            // Update Statistics
             document.getElementById('statsSection').classList.remove('hidden');
             document.getElementById('outputSection').classList.remove('hidden');
 
@@ -911,18 +822,12 @@
             renderCards();
         }
 
-        // ---------------------------------------------------------
-        // Mode & Scope Switchers
-        // ---------------------------------------------------------
         window.switchMode = function(mode) {
             currentMode = mode;
-            
-            // Buttons style
-            document.getElementById('modeDivisionBtn').className = mode === 'DIVISION' ? "px-3.5 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow transition" : "px-3.5 py-2 bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-xl text-xs font-bold flex items-center gap-1.5 transition";
-            document.getElementById('modeSupplierBtn').className = mode === 'SUPPLIER' ? "px-3.5 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow transition" : "px-3.5 py-2 bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-xl text-xs font-bold flex items-center gap-1.5 transition";
-            document.getElementById('modeCategoryBtn').className = mode === 'CATEGORY' ? "px-3.5 py-2 bg-indigo-600 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow transition" : "px-3.5 py-2 bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-xl text-xs font-bold flex items-center gap-1.5 transition";
+            document.getElementById('modeDivisionBtn').className = mode === 'DIVISION' ? "px-3.5 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow" : "px-3.5 py-2 bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-xl text-xs font-bold flex items-center gap-1.5";
+            document.getElementById('modeSupplierBtn').className = mode === 'SUPPLIER' ? "px-3.5 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow" : "px-3.5 py-2 bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-xl text-xs font-bold flex items-center gap-1.5";
+            document.getElementById('modeCategoryBtn').className = mode === 'CATEGORY' ? "px-3.5 py-2 bg-indigo-600 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow" : "px-3.5 py-2 bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-xl text-xs font-bold flex items-center gap-1.5";
 
-            // Show / Hide Division Multi-Select vs Dropdown
             if (mode === 'DIVISION') {
                 document.getElementById('divisionSelectRow').classList.remove('hidden');
                 document.getElementById('dropdownFilterRow').classList.add('hidden');
@@ -931,28 +836,24 @@
                 document.getElementById('dropdownFilterRow').classList.remove('hidden');
                 updateSingleDropdown();
             }
-
             renderCards();
         };
 
         window.setScope = function(scope) {
             currentScope = scope;
-            document.getElementById('scopeCriticalBtn').className = scope === 'CRITICAL' ? "px-3 py-1.5 bg-rose-600 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-sm transition" : "px-3 py-1.5 text-slate-700 hover:bg-slate-200 rounded-lg text-xs font-bold flex items-center gap-1.5 transition";
-            document.getElementById('scopeOverallBtn').className = scope === 'OVERALL' ? "px-3 py-1.5 bg-slate-800 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-sm transition" : "px-3 py-1.5 text-slate-700 hover:bg-slate-200 rounded-lg text-xs font-bold flex items-center gap-1.5 transition";
+            document.getElementById('scopeCriticalBtn').className = scope === 'CRITICAL' ? "px-3 py-1.5 bg-rose-600 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-sm" : "px-3 py-1.5 text-slate-700 hover:bg-slate-200 rounded-lg text-xs font-bold flex items-center gap-1.5";
+            document.getElementById('scopeOverallBtn').className = scope === 'OVERALL' ? "px-3 py-1.5 bg-slate-800 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-sm" : "px-3 py-1.5 text-slate-700 hover:bg-slate-200 rounded-lg text-xs font-bold flex items-center gap-1.5";
             renderCards();
         };
 
-        // Division Checkboxes
         function renderDivisionCheckboxes() {
             const container = document.getElementById('divisionCheckboxContainer');
             container.innerHTML = "";
-
             allDivisionsList.forEach(divName => {
                 const isChecked = selectedDivisions.has(divName);
                 const count = (divisionMap[divName] || []).length;
-
                 const label = document.createElement('label');
-                label.className = `inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium cursor-pointer border transition ${isChecked ? 'bg-blue-50 border-blue-300 text-blue-900' : 'bg-white border-slate-200 text-slate-600'}`;
+                label.className = `inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium cursor-pointer border transition ${isChecked ? 'bg-blue-50 border-blue-300 text-blue-900 font-bold' : 'bg-white border-slate-200 text-slate-600'}`;
                 label.innerHTML = `
                     <input type="checkbox" value="${divName}" ${isChecked ? 'checked' : ''} onchange="toggleDivision('${encodeURIComponent(divName)}', this.checked)" class="accent-blue-600 rounded">
                     <span>${divName}</span>
@@ -964,21 +865,15 @@
 
         window.toggleDivision = function(encodedDiv, checked) {
             const div = decodeURIComponent(encodedDiv);
-            if (checked) {
-                selectedDivisions.add(div);
-            } else {
-                selectedDivisions.delete(div);
-            }
+            if (checked) selectedDivisions.add(div);
+            else selectedDivisions.delete(div);
             renderDivisionCheckboxes();
             renderCards();
         };
 
         window.selectAllDivisions = function(select) {
-            if (select) {
-                allDivisionsList.forEach(d => selectedDivisions.add(d));
-            } else {
-                selectedDivisions.clear();
-            }
+            if (select) allDivisionsList.forEach(d => selectedDivisions.add(d));
+            else selectedDivisions.clear();
             renderDivisionCheckboxes();
             renderCards();
         };
@@ -987,9 +882,7 @@
             const filterEl = document.getElementById('singleDropdownFilter');
             filterEl.innerHTML = '<option value="ALL">Sabhi Dekhein (All)</option>';
             const targetMap = currentMode === 'SUPPLIER' ? supplierMap : categoryMap;
-            const keys = Object.keys(targetMap).sort();
-
-            keys.forEach(k => {
+            Object.keys(targetMap).sort().forEach(k => {
                 const opt = document.createElement('option');
                 opt.value = k;
                 opt.innerText = `${k} (${targetMap[k].length} items)`;
@@ -999,36 +892,15 @@
 
         document.getElementById('singleDropdownFilter').addEventListener('change', renderCards);
 
-        // ---------------------------------------------------------
-        // Render Output PO Cards
-        // ---------------------------------------------------------
         function renderCards() {
             const container = document.getElementById('cardsContainer');
             container.innerHTML = "";
 
-            let targetMap = {};
-            let themeBg = "bg-slate-900";
-            let badgeBg = "bg-blue-600";
-            let modeTitle = "Division Purchase Order";
+            let targetMap = currentMode === 'DIVISION' ? divisionMap : (currentMode === 'SUPPLIER' ? supplierMap : categoryMap);
+            let themeBg = currentMode === 'CATEGORY' ? "bg-indigo-950" : "bg-slate-900";
+            let badgeBg = currentMode === 'CATEGORY' ? "bg-purple-600" : (currentMode === 'SUPPLIER' ? "bg-indigo-600" : "bg-blue-600");
+            let modeTitle = currentMode === 'CATEGORY' ? "Custom Category PO" : (currentMode === 'SUPPLIER' ? "Supplier Purchase Order" : "Division-wise PO");
 
-            if (currentMode === 'DIVISION') {
-                targetMap = divisionMap;
-                themeBg = "bg-slate-900";
-                badgeBg = "bg-blue-600";
-                modeTitle = "Division-wise PO";
-            } else if (currentMode === 'SUPPLIER') {
-                targetMap = supplierMap;
-                themeBg = "bg-slate-900";
-                badgeBg = "bg-indigo-600";
-                modeTitle = "Supplier Purchase Order";
-            } else if (currentMode === 'CATEGORY') {
-                targetMap = categoryMap;
-                themeBg = "bg-indigo-950";
-                badgeBg = "bg-purple-600";
-                modeTitle = "Custom Category PO";
-            }
-
-            // Filter groups
             let groupsToShow = [];
             if (currentMode === 'DIVISION') {
                 groupsToShow = Array.from(selectedDivisions);
@@ -1041,12 +913,9 @@
 
             groupsToShow.forEach((groupName, gIdx) => {
                 let items = targetMap[groupName] || [];
-
-                // Apply Scope Filter (Critical vs Overall)
                 if (currentScope === 'CRITICAL') {
                     items = items.filter(it => it.isCritical);
                 }
-
                 if (items.length === 0) return;
                 renderedCardCount++;
 
@@ -1066,9 +935,7 @@
                     <div class="${themeBg} text-white p-4 sm:p-5 flex flex-wrap justify-between items-center gap-4">
                         <div>
                             <div class="flex items-center space-x-2">
-                                <span class="${badgeBg} text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">
-                                    ${modeTitle}
-                                </span>
+                                <span class="${badgeBg} text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">${modeTitle}</span>
                                 <span class="px-2 py-0.5 rounded text-[10px] font-bold ${currentScope === 'CRITICAL' ? 'bg-rose-600 text-white' : 'bg-slate-700 text-slate-200'}">
                                     ${currentScope === 'CRITICAL' ? '🚨 CRITICAL (< 5 DAYS)' : '📦 OVERALL PRODUCTS'}
                                 </span>
@@ -1078,10 +945,10 @@
                             <p class="text-xs text-slate-400">Total Items: <b>${items.length}</b> | Suggested Order: <b>${totalQty} Units</b></p>
                         </div>
                         <div class="flex items-center space-x-2 no-print">
-                            <button onclick="copyToClipboard('${encodeURIComponent(waText)}')" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg flex items-center gap-1.5 shadow-sm transition">
+                            <button onclick="copyToClipboard('${encodeURIComponent(waText)}')" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg flex items-center gap-1.5 shadow">
                                 <i data-lucide="message-square" class="w-3.5 h-3.5"></i> Copy WhatsApp
                             </button>
-                            <button onclick="downloadGroupExcel('${encodeURIComponent(groupName)}')" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-white border border-slate-600 text-xs font-semibold rounded-lg flex items-center gap-1.5 transition">
+                            <button onclick="downloadGroupExcel('${encodeURIComponent(groupName)}')" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-white border border-slate-600 text-xs font-semibold rounded-lg flex items-center gap-1.5">
                                 <i data-lucide="download" class="w-3.5 h-3.5"></i> Export Excel
                             </button>
                         </div>
@@ -1108,11 +975,7 @@
                                         <td class="py-3 px-4 text-center text-xs text-slate-400">${idx+1}</td>
                                         <td class="py-3 px-4">
                                             <div class="text-slate-900 font-semibold">${it.itemName}</div>
-                                            ${it.allVariations.length > 1 ? `
-                                                <div class="text-[10px] text-emerald-700 font-medium mt-0.5">
-                                                    Merged: ${it.allVariations.join(' + ')}
-                                                </div>
-                                            ` : ''}
+                                            ${it.allVariations.length > 1 ? `<div class="text-[10px] text-emerald-700 font-medium mt-0.5">Merged: ${it.allVariations.join(' + ')}</div>` : ''}
                                             <div class="flex flex-wrap gap-1 mt-1">
                                                 ${it.categories.map(c => `<span class="text-[9px] bg-indigo-50 text-indigo-700 px-1.5 py-0.2 rounded font-semibold border border-indigo-200">${c}</span>`).join('')}
                                             </div>
@@ -1128,9 +991,7 @@
                                         </td>
                                         <td class="py-3 px-4 text-right text-sm font-bold text-blue-600 bg-blue-50/40">${it.suggestedQty} Units</td>
                                         <td class="py-3 px-4 text-center text-xs text-slate-500">
-                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-emerald-100 text-emerald-800">
-                                                ${it.orderCount}
-                                            </span>
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-emerald-100 text-emerald-800">${it.orderCount}</span>
                                         </td>
                                     </tr>
                                 `).join('')}
@@ -1145,7 +1006,6 @@
                         </table>
                     </div>
                 `;
-
                 container.appendChild(card);
             });
 
@@ -1158,32 +1018,21 @@
                     </div>
                 `;
             }
-
             lucide.createIcons();
         }
 
-        // ---------------------------------------------------------
         // Live Instant Product Search
-        // ---------------------------------------------------------
         document.getElementById('productSearchInput').addEventListener('input', function(e) {
             const query = e.target.value.trim().toLowerCase();
             const resultBox = document.getElementById('productSearchResult');
-
             if (query.length < 2) {
                 resultBox.classList.add('hidden');
                 resultBox.innerHTML = "";
                 return;
             }
-
             if (cleanProductsMaster.length === 0) {
                 resultBox.classList.remove('hidden');
-                resultBox.innerHTML = `
-                    <div class="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-800 flex items-center gap-2">
-                        <i data-lucide="alert-circle" class="w-4 h-4"></i>
-                        <span>Pehle upar se Stock Statement upload karein ya "Demo Data Load" karein!</span>
-                    </div>
-                `;
-                lucide.createIcons();
+                resultBox.innerHTML = `<div class="p-3 bg-amber-50 text-xs text-amber-800 rounded-xl">Pehle upar se Stock Statement upload karein ya Demo Data load karein!</div>`;
                 return;
             }
 
@@ -1196,48 +1045,31 @@
 
             if (matched.length === 0) {
                 resultBox.classList.remove('hidden');
-                resultBox.innerHTML = `
-                    <div class="p-4 bg-white border border-slate-200 rounded-xl text-center text-xs text-slate-500">
-                        "${e.target.value}" naam se koi bhi product nahi mila.
-                    </div>
-                `;
+                resultBox.innerHTML = `<div class="p-4 bg-white border border-slate-200 rounded-xl text-center text-xs text-slate-500">"${e.target.value}" naam se koi product nahi mila.</div>`;
                 return;
             }
 
             resultBox.classList.remove('hidden');
             resultBox.innerHTML = `
                 <div class="bg-white border border-blue-200 rounded-xl shadow-md overflow-hidden">
-                    <div class="px-4 py-2.5 bg-slate-100 border-b border-slate-200 flex justify-between items-center text-xs text-slate-600 font-medium">
-                        <span>Milte-julte Products (${matched.length})</span>
-                        <span class="text-blue-600 font-semibold">Live Combined Stock & Favourite Supplier</span>
+                    <div class="px-4 py-2 bg-slate-100 text-xs text-slate-600 font-semibold flex justify-between">
+                        <span>Matched Products (${matched.length})</span>
+                        <span class="text-blue-600">Live Combined Stock & Favourite Supplier</span>
                     </div>
                     <div class="divide-y divide-slate-100">
                         ${matched.map(item => `
-                            <div class="p-4 hover:bg-blue-50/30 transition flex flex-col md:flex-row md:items-center justify-between gap-4">
+                            <div class="p-4 hover:bg-blue-50/30 flex flex-col md:flex-row md:items-center justify-between gap-4">
                                 <div class="space-y-1">
                                     <div class="flex items-center space-x-2">
                                         <h4 class="text-sm font-bold text-slate-900">${item.itemName}</h4>
-                                        <span class="text-[11px] font-semibold bg-blue-50 text-blue-700 px-2 py-0.5 rounded border border-blue-200">
-                                            ${item.division}
-                                        </span>
+                                        <span class="text-[11px] font-semibold bg-blue-50 text-blue-700 px-2 py-0.5 rounded border border-blue-200">${item.division}</span>
                                     </div>
                                     <div class="flex flex-wrap items-center gap-1.5 mt-1">
-                                        ${item.categories.map(c => `
-                                            <span class="text-[10px] font-bold bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded-md">
-                                                🏷️ ${c}
-                                            </span>
-                                        `).join('')}
+                                        ${item.categories.map(c => `<span class="text-[10px] font-bold bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded">🏷️ ${c}</span>`).join('')}
                                     </div>
-                                    ${item.allVariations.length > 1 ? `
-                                        <div class="text-[11px] text-emerald-700 font-medium">
-                                            🔗 Merged Variations: ${item.allVariations.join(', ')}
-                                        </div>
-                                    ` : ''}
-                                    <div class="text-xs text-slate-600">
-                                        Favourite Supplier: <b class="text-slate-900">${item.favSupplier}</b> (${item.orderCount} past bills)
-                                    </div>
+                                    ${item.allVariations.length > 1 ? `<div class="text-[11px] text-emerald-700 font-medium">🔗 Merged Variations: ${item.allVariations.join(', ')}</div>` : ''}
+                                    <div class="text-xs text-slate-600">Favourite Supplier: <b class="text-slate-900">${item.favSupplier}</b> (${item.orderCount} past bills)</div>
                                 </div>
-
                                 <div class="flex items-center space-x-3 text-center">
                                     <div class="px-3 py-1.5 rounded-lg bg-blue-50 border border-blue-200 min-w-[75px]">
                                         <span class="text-[10px] text-blue-700 block uppercase font-bold">Stock</span>
@@ -1264,14 +1096,8 @@
             lucide.createIcons();
         });
 
-        // ---------------------------------------------------------
-        // Export & WhatsApp Helpers
-        // ---------------------------------------------------------
         window.copyToClipboard = function(encodedText) {
-            const text = decodeURIComponent(encodedText);
-            navigator.clipboard.writeText(text).then(() => {
-                alert("WhatsApp Order Text Clipboard par copy ho gaya!");
-            });
+            navigator.clipboard.writeText(decodeURIComponent(encodedText)).then(() => alert("WhatsApp Order Text Clipboard par copy ho gaya!"));
         };
 
         window.downloadGroupExcel = function(encodedGroup) {
