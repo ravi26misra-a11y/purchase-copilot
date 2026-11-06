@@ -130,4 +130,1098 @@
                                 <span>Critical Buffer Threshold</span>
                                 <span class="text-rose-600 font-bold" id="criticalDaysVal">5 Days</span>
                             </div>
-                            <input type="range" id="criticalDays" min="1" max="10" value="5" class="w-full mt-1 accent-rose-600" on
+                            <input type="range" id="criticalDays" min="1" max="10" value="5" class="w-full mt-1 accent-rose-600" oninput="document.getElementById('criticalDaysVal').innerText = this.value + ' Days'">
+                            <span class="text-[10px] text-slate-400 block mt-0.5">Critical Filter = Stock &lt; 5 Din ki daily sale</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-4 flex flex-col gap-2">
+                    <button id="processBtn" class="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-white font-bold text-sm rounded-xl shadow-lg flex items-center justify-center gap-2 transition cursor-pointer">
+                        <i data-lucide="refresh-cw" class="w-4 h-4" id="processBtnIcon"></i>
+                        <span id="processBtnText">Process & Generate PO</span>
+                    </button>
+                    <button id="loadSampleBtn" class="w-full py-1 text-xs text-slate-500 hover:text-slate-800 font-medium underline text-center">
+                        Ya Test Demo Data Load Karein
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Category Pills Bar -->
+        <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-3 no-print">
+            <div class="flex items-center gap-2">
+                <i data-lucide="bookmark-check" class="w-4 h-4 text-indigo-600"></i>
+                <span class="text-xs font-bold text-slate-700 uppercase tracking-wider">Aapki Saved Categories:</span>
+            </div>
+            <div id="categoryPillsList" class="flex flex-wrap items-center gap-2"></div>
+            <button onclick="openCategoryModal()" class="text-xs text-indigo-600 hover:text-indigo-800 font-semibold underline flex items-center gap-1">
+                <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i> Add / Upload Excel
+            </button>
+        </div>
+
+        <!-- Instant Product Search Bar -->
+        <div class="bg-white p-5 rounded-2xl shadow-sm border border-blue-200 bg-gradient-to-r from-blue-50/50 via-white to-indigo-50/30 no-print">
+            <div class="flex items-center space-x-2 mb-3 text-blue-900 font-bold">
+                <i data-lucide="search" class="w-5 h-5 text-blue-600"></i>
+                <h3 class="text-base">Instant Product Search (Live Combined Stock, Daily Sale, Cover Days & Favourite Supplier)</h3>
+            </div>
+            <div class="relative">
+                <input type="text" id="productSearchInput" placeholder="Product ka naam type karein (e.g. BITATEL, DOLO, AUGMENTIN, PAN D, MIGRABETA)..." 
+                       class="w-full pl-11 pr-4 py-3 bg-white border border-slate-300 rounded-xl text-sm font-medium focus:ring-2 focus:ring-blue-600 shadow-sm">
+                <i data-lucide="search" class="w-5 h-5 text-slate-400 absolute left-3.5 top-3.5"></i>
+            </div>
+            <div id="productSearchResult" class="mt-4 hidden space-y-3"></div>
+        </div>
+
+        <!-- Deduplication Notice Box -->
+        <div id="dedupAlertBox" class="hidden bg-emerald-50 border border-emerald-200 rounded-2xl p-4 no-print">
+            <div class="flex items-start gap-3">
+                <div class="p-2 bg-emerald-100 rounded-lg text-emerald-700 mt-0.5">
+                    <i data-lucide="copy-check" class="w-5 h-5"></i>
+                </div>
+                <div class="flex-1">
+                    <h4 class="text-sm font-bold text-emerald-900">Smart Deduplication Report: <span id="mergedItemsCount">0</span> Duplicate Variations Merged!</h4>
+                    <p class="text-xs text-emerald-700 mt-0.5">Similar packings/codes ka stock aur sales apas me PLUS karke clean master banaya gaya hai.</p>
+                    <div id="mergedDetailsList" class="mt-2 text-xs text-emerald-800 space-y-1 font-mono max-h-32 overflow-y-auto"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Statistics -->
+        <div id="statsSection" class="hidden grid grid-cols-2 sm:grid-cols-4 gap-4 no-print">
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                <span class="text-xs font-medium text-slate-500">Unique Clean Products</span>
+                <p id="statTotalSkus" class="text-2xl font-bold text-slate-900 mt-1">0</p>
+            </div>
+            <div class="bg-white p-4 rounded-xl border border-amber-200 bg-amber-50/40 shadow-sm">
+                <span class="text-xs font-semibold text-amber-700">Total Items for Reorder</span>
+                <p id="statReorderCount" class="text-2xl font-bold text-amber-700 mt-1">0</p>
+            </div>
+            <div class="bg-white p-4 rounded-xl border border-rose-200 bg-rose-50/40 shadow-sm">
+                <span class="text-xs font-semibold text-rose-700">Critical (&lt; 5 Days Cover)</span>
+                <p id="statCriticalCount" class="text-2xl font-bold text-rose-700 mt-1">0</p>
+            </div>
+            <div class="bg-white p-4 rounded-xl border border-emerald-200 bg-emerald-50/40 shadow-sm">
+                <span class="text-xs font-semibold text-emerald-700">Total Suggested Units</span>
+                <p id="statTotalUnits" class="text-2xl font-bold text-emerald-700 mt-1">0</p>
+            </div>
+        </div>
+
+        <!-- PO OUTPUTS SECTION (3 MAIN OPTIONS + 2 SUB OPTIONS) -->
+        <div id="outputSection" class="hidden space-y-6">
+
+            <!-- Control Bar -->
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4 no-print">
+                
+                <!-- Row 1: 3 Main PO Modes + 2 Sub-options -->
+                <div class="flex flex-wrap items-center justify-between gap-4">
+                    <!-- 3 Main Options -->
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="text-xs font-bold text-slate-500 uppercase tracking-wider mr-1">PO Mode:</span>
+                        <button id="modeDivisionBtn" onclick="switchMode('DIVISION')" class="px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow transition">
+                            <i data-lucide="layers" class="w-4 h-4"></i> 1. Division-wise PO
+                        </button>
+                        <button id="modeSupplierBtn" onclick="switchMode('SUPPLIER')" class="px-4 py-2 bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-xl text-xs font-bold flex items-center gap-1.5 transition">
+                            <i data-lucide="truck" class="w-4 h-4"></i> 2. Supplier-wise PO
+                        </button>
+                        <button id="modeCategoryBtn" onclick="switchMode('CATEGORY')" class="px-4 py-2 bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-xl text-xs font-bold flex items-center gap-1.5 transition">
+                            <i data-lucide="tags" class="w-4 h-4"></i> 3. Category-wise PO
+                        </button>
+                    </div>
+
+                    <!-- 2 Sub-options inside each mode -->
+                    <div class="flex items-center space-x-2 bg-slate-100 p-1.5 rounded-xl border border-slate-200">
+                        <button id="scopeCriticalBtn" onclick="setScope('CRITICAL')" class="px-3.5 py-1.5 bg-rose-600 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-sm transition">
+                            <i data-lucide="alert-triangle" class="w-3.5 h-3.5"></i> Critical Only (&lt; 5 Days)
+                        </button>
+                        <button id="scopeOverallBtn" onclick="setScope('OVERALL')" class="px-3.5 py-1.5 text-slate-700 hover:bg-slate-200 rounded-lg text-xs font-bold flex items-center gap-1.5 transition">
+                            <i data-lucide="package" class="w-3.5 h-3.5"></i> Overall Products
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Division Multi-Select Container (Visible in Division Mode) -->
+                <div id="divisionSelectRow" class="pt-3 border-t border-slate-100 space-y-2">
+                    <div class="flex flex-wrap items-center justify-between gap-3">
+                        <label class="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+                            <i data-lucide="check-square" class="w-4 h-4 text-blue-600"></i> Division Select Karein (Single ya Multi-Select):
+                        </label>
+                        <div class="flex items-center space-x-2">
+                            <input type="text" id="divisionSearchBox" placeholder="Division search karein..." 
+                                   oninput="filterDivisionList(this.value)"
+                                   class="text-xs px-3 py-1 border border-slate-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-600">
+                            <button onclick="selectAllDivisions(true)" class="text-xs text-blue-600 font-bold underline">Sabhi Select</button>
+                            <span class="text-slate-300">|</span>
+                            <button onclick="selectAllDivisions(false)" class="text-xs text-slate-500 font-bold underline">Clear</button>
+                        </div>
+                    </div>
+                    <div id="divisionCheckboxContainer" class="flex flex-wrap gap-2 max-h-44 overflow-y-auto p-2.5 bg-slate-50 border border-slate-200 rounded-xl"></div>
+                </div>
+
+                <!-- Dropdown Filter (Visible in Supplier and Category Modes) -->
+                <div id="dropdownFilterRow" class="hidden pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3">
+                    <div class="flex items-center space-x-3">
+                        <span id="filterLabel" class="text-xs font-bold text-slate-700 uppercase tracking-wider">Filter:</span>
+                        <select id="singleDropdownFilter" class="text-sm bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 font-medium">
+                            <option value="ALL">Sabhi Dekhein (All)</option>
+                        </select>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button id="exportAllExcelBtn" class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 shadow">
+                            <i data-lucide="file-spreadsheet" class="w-4 h-4"></i> Export to Excel
+                        </button>
+                        <button onclick="window.print()" class="px-3.5 py-1.5 bg-slate-800 hover:bg-slate-900 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 shadow">
+                            <i data-lucide="printer" class="w-4 h-4"></i> Print PO
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Dynamic Group Cards Container -->
+            <div id="cardsContainer" class="space-y-6"></div>
+        </div>
+
+    </main>
+
+    <!-- Modal: Category Manager -->
+    <div id="categoryModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white w-full max-w-3xl rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="bg-slate-900 text-white p-5 flex items-center justify-between">
+                <div class="flex items-center space-x-2.5">
+                    <div class="p-2 bg-indigo-600 rounded-xl">
+                        <i data-lucide="tags" class="w-5 h-5 text-white"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-bold">Custom Category Manager</h3>
+                        <p class="text-xs text-slate-400">Excel se Product List Upload karein ya Type karke Save karein</p>
+                    </div>
+                </div>
+                <button onclick="closeCategoryModal()" class="text-slate-400 hover:text-white">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <div class="p-6 overflow-y-auto space-y-6 flex-1">
+                <!-- Excel Upload to Category -->
+                <div class="bg-indigo-50/50 p-4 rounded-2xl border border-indigo-200 space-y-3">
+                    <h4 class="text-xs font-bold text-indigo-900 uppercase tracking-wider flex items-center gap-1.5">
+                        <i data-lucide="file-up" class="w-4 h-4 text-indigo-600"></i> Excel Upload Se Category Me Product Add Karein
+                    </h4>
+                    <p class="text-xs text-slate-600">Excel / CSV file select karein jisme product names hon, wo selected category me auto-add ho jayenge.</p>
+                    <div class="flex flex-wrap gap-2 items-center">
+                        <select id="modalUploadCatSelect" class="px-3 py-2 text-xs bg-white border border-slate-300 rounded-xl font-medium"></select>
+                        <input type="file" id="catExcelUploadInput" class="text-xs text-slate-600 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-indigo-600 file:text-white file:font-bold">
+                        <span id="catUploadStatus" class="text-xs font-semibold text-emerald-700 hidden"></span>
+                    </div>
+                </div>
+
+                <!-- Create Category -->
+                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-3">
+                    <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+                        <i data-lucide="plus-circle" class="w-4 h-4 text-blue-600"></i> Nayi Category Banayein
+                    </h4>
+                    <div class="flex gap-2">
+                        <input type="text" id="newCategoryName" placeholder="Category Name (e.g. Most Running Products, High Profit)..." 
+                               class="flex-1 px-4 py-2 text-sm bg-white border border-slate-300 rounded-xl">
+                        <button onclick="addNewCategory()" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow">
+                            Add Category
+                        </button>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider mb-3">Saved Categories & Tagged Products</h4>
+                    <div id="modalCategoryList" class="space-y-4"></div>
+                </div>
+            </div>
+
+            <div class="p-4 bg-slate-50 border-t border-slate-200 flex justify-between items-center text-xs">
+                <span class="text-slate-500">Yeh categories browser me <b>permanently saved</b> rahengi.</span>
+                <button onclick="closeCategoryModal()" class="px-5 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl">
+                    Done / Save Changes
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="mt-auto py-4 text-center text-xs text-slate-500 border-t border-slate-200 no-print">
+        AI Purchase Copilot Pro • Sharda Medical Agency • Exact Software Logic
+    </footer>
+
+    <!-- JavaScript Application Engine -->
+    <script>
+        let rawStockData = [];
+        let rawPurchData = [];
+        let cleanProductsMaster = []; 
+        let calculatedOrders = [];
+        let supplierMap = {};
+        let divisionMap = {};
+        let categoryMap = {};
+        let allDivisionsList = [];
+        let selectedDivisions = new Set();
+        let currentMode = "DIVISION"; 
+        let currentScope = "CRITICAL"; 
+
+        const DEFAULT_CATEGORIES = {
+            "Most Running Products": ["BITATEL", "DOLO 650", "AUGMENTIN", "PAN D", "AZITHRAL"],
+            "High Profit Products": ["SHELCAL", "CHYMORAL", "GLYCOMET", "TELMA"]
+        };
+
+        function getStoredCategories() {
+            try {
+                const stored = localStorage.getItem("copilot_categories_v8");
+                return stored ? JSON.parse(stored) : DEFAULT_CATEGORIES;
+            } catch(e) { return DEFAULT_CATEGORIES; }
+        }
+
+        function saveStoredCategories(categories) {
+            localStorage.setItem("copilot_categories_v8", JSON.stringify(categories));
+            renderCategoryPills();
+            updateModalCategoryDropdown();
+        }
+
+        let customCategories = getStoredCategories();
+        lucide.createIcons();
+
+        function cleanString(str) {
+            if (!str) return "";
+            return String(str).replace(/\0/g, '').replace(/\x00/g, '').trim();
+        }
+
+        function cleanPharmaProductName(str) {
+            if (!str) return "";
+            let s = cleanString(str);
+            s = s.replace(/@+/g, '');
+            s = s.replace(/\(dis\s*[\d\.]+%/gi, '');
+            s = s.replace(/-\s*\d+.*$/g, '');
+            s = s.replace(/[\.\,\/\-\_\(\)\[\]]/g, ' ');
+            s = s.replace(/(\d+)\s*(mg|gm|ml|mcg|iu)/gi, '$1$2');
+            s = s.replace(/(\d+)mg/gi, '$1');
+            s = s.replace(/\b(tablets|tablet|tabs|tab|tb)\b/gi, 'tab');
+            s = s.replace(/\b(capsules|capsule|cap|caps)\b/gi, 'cap');
+            s = s.replace(/\b(syrup|syp|suspension|susp)\b/gi, 'syp');
+            let tokens = s.toLowerCase().split(/\s+/).filter(t => t.length > 0 && t !== 'tab' && t !== 'cap' && t !== 'syp' && t !== 'dis');
+            tokens.sort();
+            return tokens.join(' ');
+        }
+
+        function parseNum(val) {
+            if (val === undefined || val === null || val === '') return 0;
+            const n = parseFloat(String(val).replace(/[^0-9.-]/g, ''));
+            return isNaN(n) ? 0 : n;
+        }
+
+        function renderCategoryPills() {
+            const container = document.getElementById('categoryPillsList');
+            container.innerHTML = "";
+            Object.keys(customCategories).forEach(catName => {
+                const pill = document.createElement('span');
+                pill.className = "inline-flex items-center gap-1.5 px-3 py-1 bg-indigo-50 border border-indigo-200 text-indigo-800 text-xs font-semibold rounded-full";
+                pill.innerHTML = `<span>${catName} (${customCategories[catName].length})</span>`;
+                container.appendChild(pill);
+            });
+            document.getElementById('statCategoryCount').innerText = Object.keys(customCategories).length;
+        }
+        renderCategoryPills();
+
+        window.openCategoryModal = function() {
+            document.getElementById('categoryModal').classList.remove('hidden');
+            updateModalCategoryDropdown();
+            renderModalCategories();
+        };
+
+        window.closeCategoryModal = function() {
+            document.getElementById('categoryModal').classList.add('hidden');
+            if (rawStockData.length > 0) runEngine();
+        };
+
+        function updateModalCategoryDropdown() {
+            const sel = document.getElementById('modalUploadCatSelect');
+            sel.innerHTML = "";
+            Object.keys(customCategories).forEach(cat => {
+                const opt = document.createElement('option');
+                opt.value = cat;
+                opt.innerText = cat;
+                sel.appendChild(opt);
+            });
+        }
+
+        function renderModalCategories() {
+            const list = document.getElementById('modalCategoryList');
+            list.innerHTML = "";
+            Object.keys(customCategories).forEach(cat => {
+                const items = customCategories[cat] || [];
+                const catCard = document.createElement('div');
+                catCard.className = "bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3";
+                catCard.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-indigo-600"></span>
+                            <h5 class="text-sm font-bold text-slate-900">${cat}</h5>
+                            <span class="text-xs text-slate-500">(${items.length} products)</span>
+                        </div>
+                        <button onclick="deleteCategory('${encodeURIComponent(cat)}')" class="text-rose-600 hover:text-rose-800 text-xs font-medium flex items-center gap-1">
+                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Delete
+                        </button>
+                    </div>
+                    <div class="flex gap-2">
+                        <input type="text" id="addProd_${encodeURIComponent(cat)}" placeholder="Product name type karein..." 
+                               class="flex-1 px-3 py-1.5 text-xs bg-slate-50 border border-slate-300 rounded-lg">
+                        <button onclick="addProductToCategory('${encodeURIComponent(cat)}')" class="px-3 py-1.5 bg-slate-800 text-white text-xs font-semibold rounded-lg">
+                            Add Product
+                        </button>
+                    </div>
+                    <div class="flex flex-wrap gap-1.5 max-h-32 overflow-y-auto p-1 bg-slate-50 rounded-xl border border-slate-100">
+                        ${items.map(p => `
+                            <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-white text-slate-800 rounded-lg text-xs font-medium border border-slate-200">
+                                <span>${p}</span>
+                                <button onclick="removeProductFromCategory('${encodeURIComponent(cat)}', '${encodeURIComponent(p)}')" class="text-slate-400 hover:text-rose-600">
+                                    <i data-lucide="x" class="w-3 h-3"></i>
+                                </button>
+                            </span>
+                        `).join('')}
+                    </div>
+                `;
+                list.appendChild(catCard);
+            });
+            lucide.createIcons();
+        }
+
+        window.addNewCategory = function() {
+            const input = document.getElementById('newCategoryName');
+            const name = input.value.trim();
+            if (!name || customCategories[name]) return;
+            customCategories[name] = [];
+            saveStoredCategories(customCategories);
+            input.value = "";
+            renderModalCategories();
+        };
+
+        window.deleteCategory = function(encodedCat) {
+            const cat = decodeURIComponent(encodedCat);
+            if (confirm(`Delete category "${cat}"?`)) {
+                delete customCategories[cat];
+                saveStoredCategories(customCategories);
+                renderModalCategories();
+            }
+        };
+
+        window.addProductToCategory = function(encodedCat) {
+            const cat = decodeURIComponent(encodedCat);
+            const input = document.getElementById(`addProd_${encodedCat}`);
+            const prod = input.value.trim().toUpperCase();
+            if (!prod) return;
+            if (!customCategories[cat].includes(prod)) {
+                customCategories[cat].push(prod);
+                saveStoredCategories(customCategories);
+            }
+            input.value = "";
+            renderModalCategories();
+        };
+
+        window.removeProductFromCategory = function(encodedCat, encodedProd) {
+            const cat = decodeURIComponent(encodedCat);
+            const prod = decodeURIComponent(encodedProd);
+            customCategories[cat] = customCategories[cat].filter(p => p !== prod);
+            saveStoredCategories(customCategories);
+            renderModalCategories();
+        };
+
+        // EXCEL UPLOAD FOR CATEGORY PRODUCTS
+        document.getElementById('catExcelUploadInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const targetCat = document.getElementById('modalUploadCatSelect').value;
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                try {
+                    const data = new Uint8Array(evt.target.result);
+                    const wb = XLSX.read(data, { type: 'array' });
+                    const ws = wb.Sheets[wb.SheetNames[0]];
+                    const json = XLSX.utils.sheet_to_json(ws, { header: 1 });
+                    let addedCount = 0;
+                    json.forEach(row => {
+                        if (!row) return;
+                        for (let c = 0; c < Math.min(row.length, 6); c++) {
+                            const val = cleanString(row[c]);
+                            if (val && val.length > 2 && !val.toLowerCase().includes('item') && !val.toLowerCase().includes('name')) {
+                                const prodUpper = val.toUpperCase();
+                                if (!customCategories[targetCat].includes(prodUpper)) {
+                                    customCategories[targetCat].push(prodUpper);
+                                    addedCount++;
+                                }
+                                break;
+                            }
+                        }
+                    });
+                    saveStoredCategories(customCategories);
+                    renderModalCategories();
+                    const statusEl = document.getElementById('catUploadStatus');
+                    statusEl.innerText = `✓ ${addedCount} products added to "${targetCat}"!`;
+                    statusEl.classList.remove('hidden');
+                } catch(err) { alert("File error: " + err.message); }
+            };
+            reader.readAsArrayBuffer(file);
+        });
+
+        // -------------------------------------------------------------
+        // FAST FILE READERS
+        // -------------------------------------------------------------
+        const stockInput = document.getElementById('stockFileInput');
+        stockInput.addEventListener('click', function() { this.value = null; });
+        stockInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            document.getElementById('stockFileNameDisplay').innerText = `File: ${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
+            document.getElementById('stockLoading').classList.remove('hidden');
+            document.getElementById('stockStats').classList.add('hidden');
+
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                setTimeout(() => {
+                    try {
+                        const data = new Uint8Array(evt.target.result);
+                        const wb = XLSX.read(data, { type: 'array', dense: true });
+                        const ws = wb.Sheets[wb.SheetNames[0]];
+                        rawStockData = XLSX.utils.sheet_to_json(ws, { header: 1 });
+                        const rowsCount = Math.max(0, rawStockData.length - 1);
+                        document.getElementById('stockLoading').classList.add('hidden');
+                        document.getElementById('stockStats').classList.remove('hidden');
+                        document.getElementById('stockCount').innerText = rowsCount;
+                    } catch(err) {
+                        document.getElementById('stockLoading').classList.add('hidden');
+                        alert("Stock File Error: " + err.message);
+                    }
+                }, 40);
+            };
+            reader.readAsArrayBuffer(file);
+        });
+
+        const historyInput = document.getElementById('historyFileInput');
+        historyInput.addEventListener('click', function() { this.value = null; });
+        historyInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            document.getElementById('historyFileNameDisplay').innerText = `File: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`;
+            document.getElementById('historyLoading').classList.remove('hidden');
+            document.getElementById('historyStats').classList.add('hidden');
+
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                setTimeout(() => {
+                    try {
+                        const data = new Uint8Array(evt.target.result);
+                        const wb = XLSX.read(data, { type: 'array', dense: true });
+                        const ws = wb.Sheets[wb.SheetNames[0]];
+                        rawPurchData = XLSX.utils.sheet_to_json(ws, { header: 1 });
+                        const rowsCount = Math.max(0, rawPurchData.length - 1);
+                        document.getElementById('historyLoading').classList.add('hidden');
+                        document.getElementById('historyStats').classList.remove('hidden');
+                        document.getElementById('historyCount').innerText = rowsCount;
+                    } catch(err) {
+                        document.getElementById('historyLoading').classList.add('hidden');
+                        alert("Purchase Register Error: " + err.message);
+                    }
+                }, 40);
+            };
+            reader.readAsArrayBuffer(file);
+        });
+
+        // Demo Data Loader
+        document.getElementById('loadSampleBtn').addEventListener('click', function() {
+            rawStockData = [
+                ["item_code", "mfac_name", "stock_c_item_code", "c_name", "n1", "n1_1", "n1_2", "n1_3", "n1_4", "n1_5", "n1_6", "n1_7", "n1_8", "n1_9", "n1_10", "n1_11", "n1_12", "n1_13", "n1_14", "n1_15"],
+                ["MD0001", "4 CARE LIFESCIENCE", "P07176", "BITATEL 40 TAB  (DIS 6%) - 10 TAB", 34, 53, 0, 0, 0, 0, 51, 0, 0, 0, 0, 0, 0, 0, 0, 15],
+                ["MD0001", "4 CARE LIFESCIENCE", "P07177", "BITATEL AM TAB  (DIS 6%) - 10 TAB", 98, 65, 0, 0, 0, 0, 71, 0, 0, 0, 0, 0, 0, 0, 0, 6],
+                ["MD0001", "4 CARE LIFESCIENCE", "P07465", "BITATEL M 50 TAB  (DIS 6%) - 10 TAB", 112, 57, 0, 0, 0, 0, 204, 50, 0, 0, 0, 0, 0, 0, 0, 12],
+                ["MD0002", "ABBOT HEALTHCARE JANUS", "P08101", "DOLO 650 MG TAB  (DIS 5%) - 15 TAB", 40, 50, 0, 0, 0, 0, 180, 0, 0, 0, 0, 0, 0, 0, 0, 10],
+                ["MD0002", "ABBOT HEALTHCARE JANUS", "P08102", "DOLO 650 TAB - 15 TAB", 50, 40, 0, 0, 0, 0, 150, 0, 0, 0, 0, 0, 0, 0, 0, 8],
+                ["MD0003", "ZYDUS CADILA CARDIO", "P09201", "AUGMENTIN 625 DUO TAB  (DIS 8%) - 10 TAB", 120, 140, 0, 0, 0, 0, 300, 0, 0, 0, 0, 0, 0, 0, 0, 14],
+                ["MD0003", "ZYDUS CADILA CARDIO", "P09202", "PAN D CAPSULE  (DIS 7%) - 10*15", 200, 180, 0, 0, 0, 0, 450, 0, 0, 0, 0, 0, 0, 0, 0, 25]
+            ];
+
+            rawPurchData = [
+                ["A", "B", "C", "D", "Product Name", "Date", "Qty", "H", "I", "J", "K", "L", "M", "N", "O", "Supplier"],
+                ["", "", "", "", "BITATEL 40 TAB  (DIS 6%) - 10 TAB", "01/10/2026", 100, "", "", "", "", "", "", "", "", "SHARDA PHARMA  (PURCHASE)"],
+                ["", "", "", "", "BITATEL 40 TAB  (DIS 6%) - 10 TAB", "15/10/2026", 100, "", "", "", "", "", "", "", "", "SHARDA PHARMA  (PURCHASE)"],
+                ["", "", "", "", "BITATEL AM TAB  (DIS 6%) - 10 TAB", "05/10/2026", 150, "", "", "", "", "", "", "", "", "SUN PHARMA DISTRIBUTORS"],
+                ["", "", "", "", "DOLO 650 MG TAB  (DIS 5%) - 15 TAB", "02/10/2026", 500, "", "", "", "", "", "", "", "", "MICRO LABS AGENCY"],
+                ["", "", "", "", "DOLO 650 TAB - 15 TAB", "12/10/2026", 400, "", "", "", "", "", "", "", "", "MICRO LABS AGENCY"],
+                ["", "", "", "", "AUGMENTIN 625 DUO TAB", "04/10/2026", 300, "", "", "", "", "", "", "", "", "GLAXO SMITHKLINE DEPOT"],
+                ["", "", "", "", "PAN D CAPSULE", "07/10/2026", 400, "", "", "", "", "", "", "", "", "ALKEM LABORATORIES AGENCY"]
+            ];
+
+            document.getElementById('stockStats').classList.remove('hidden');
+            document.getElementById('stockCount').innerText = rawStockData.length - 1;
+            document.getElementById('historyStats').classList.remove('hidden');
+            document.getElementById('historyCount').innerText = rawPurchData.length - 1;
+
+            runEngine();
+        });
+
+        // -------------------------------------------------------------
+        // PROCESS ENGINE (SMOOTH & INSTANT)
+        // -------------------------------------------------------------
+        document.getElementById('processBtn').addEventListener('click', function() {
+            const btnText = document.getElementById('processBtnText');
+            btnText.innerText = "Calculating POs...";
+            setTimeout(() => {
+                runEngine();
+                btnText.innerText = "Process & Generate PO";
+            }, 30);
+        });
+
+        function runEngine() {
+            if (rawStockData.length === 0) {
+                alert("Kripya pehle Stock File (SS N 061126) upload karein!");
+                return;
+            }
+
+            const targetDays = parseFloat(document.getElementById('targetDays').value) || 15;
+            const criticalDays = parseFloat(document.getElementById('criticalDays').value) || 5;
+
+            // 1. Process Purchase Register
+            // Col E(4): Product Name, Col P(15): Supplier Name
+            const normItemSupplierFreq = {};
+            for (let r = 1; r < rawPurchData.length; r++) {
+                const row = rawPurchData[r];
+                if (!row || row.length === 0) continue;
+
+                const prodRaw = cleanString(row[4]);
+                const suppRaw = cleanString(row[15]);
+
+                if (prodRaw && suppRaw) {
+                    const normKey = cleanPharmaProductName(prodRaw);
+                    if (!normItemSupplierFreq[normKey]) normItemSupplierFreq[normKey] = {};
+                    normItemSupplierFreq[normKey][suppRaw] = (normItemSupplierFreq[normKey][suppRaw] || 0) + 1;
+                }
+            }
+
+            // 2. Process Stock Statement:
+            // Col B(1): Division | Col D(3): Product Name | Col K(10): Duration Sale | Col L(11): Special Sale | Col T(19): Closing Stock
+            const mergedStockMap = {};
+            const deduplicationAudit = [];
+            const divisionsSet = new Set();
+
+            for (let r = 1; r < rawStockData.length; r++) {
+                const row = rawStockData[r];
+                if (!row || row.length === 0) continue;
+
+                const division = cleanString(row[1]) || "GENERAL DIVISION";
+                const prodName = cleanString(row[3]); 
+                if (!prodName) continue;
+
+                divisionsSet.add(division);
+
+                const m1Sale = parseNum(row[4]);
+                const m2Sale = parseNum(row[5]);
+                const durationSale = parseNum(row[10]);
+                const specialSale = parseNum(row[11]);
+                const closingStock = parseNum(row[19]);
+
+                let netSale = 0;
+                if (durationSale > 0) {
+                    netSale = Math.max(0, durationSale - specialSale);
+                } else if ((m1Sale + m2Sale) > 0) {
+                    netSale = Math.max(0, ((m1Sale + m2Sale) / 2) - specialSale);
+                }
+
+                const dailySale = netSale > 0 ? (netSale / 30) : 0;
+                const normKey = cleanPharmaProductName(prodName);
+
+                if (!mergedStockMap[normKey]) {
+                    mergedStockMap[normKey] = {
+                        primaryName: prodName,
+                        allVariations: [prodName],
+                        division: division,
+                        closingStock: closingStock,
+                        netSale: netSale,
+                        dailySale: dailySale,
+                        normKey: normKey
+                    };
+                } else {
+                    const existing = mergedStockMap[normKey];
+                    existing.closingStock += closingStock;
+                    existing.netSale += netSale;
+                    existing.dailySale += dailySale;
+                    existing.allVariations.push(prodName);
+
+                    deduplicationAudit.push({
+                        masterName: existing.primaryName,
+                        mergedVariation: prodName,
+                        addedStock: closingStock,
+                        totalStock: existing.closingStock
+                    });
+                }
+            }
+
+            allDivisionsList = Array.from(divisionsSet).sort();
+
+            // Deduplication alert
+            const alertBox = document.getElementById('dedupAlertBox');
+            const detailsList = document.getElementById('mergedDetailsList');
+            if (deduplicationAudit.length > 0) {
+                alertBox.classList.remove('hidden');
+                document.getElementById('mergedItemsCount').innerText = deduplicationAudit.length;
+                detailsList.innerHTML = deduplicationAudit.map(d => `
+                    <div>• Merged: <b>"${d.mergedVariation}"</b> (+${d.addedStock} stock) -> Combined in <b>"${d.masterName}"</b> (Total Stock: ${d.totalStock})</div>
+                `).join('');
+            } else {
+                alertBox.classList.add('hidden');
+            }
+
+            // 3. Build Final Clean Master & PO Buckets
+            cleanProductsMaster = [];
+            calculatedOrders = [];
+            supplierMap = {};
+            divisionMap = {};
+            categoryMap = {};
+
+            let criticalCount = 0;
+
+            Object.values(mergedStockMap).forEach(item => {
+                const stock = item.closingStock;
+                const daily = item.dailySale;
+                const coverDays = daily > 0 ? (stock / daily) : (stock > 0 ? 999 : 0);
+                const isCritical = coverDays < criticalDays;
+                if (isCritical) criticalCount++;
+
+                const needsReorder = (daily > 0 && stock < (daily * targetDays)) || (daily === 0 && stock === 0);
+
+                let suggestedQty = 0;
+                if (daily > 0) {
+                    suggestedQty = Math.max(0, Math.ceil((daily * targetDays) - stock));
+                } else if (stock === 0) {
+                    suggestedQty = 20;
+                }
+
+                // Favourite Supplier
+                const suppFreq = normItemSupplierFreq[item.normKey] || {};
+                let maxOrders = -1;
+                let topSupplier = "Direct / Unassigned Supplier";
+                for (let s in suppFreq) {
+                    if (suppFreq[s] > maxOrders) {
+                        maxOrders = suppFreq[s];
+                        topSupplier = s;
+                    }
+                }
+                const orderCount = maxOrders > 0 ? maxOrders : 0;
+
+                // Match with Custom Categories
+                const matchedCategories = [];
+                for (let catName in customCategories) {
+                    const keywords = customCategories[catName];
+                    const isMatched = keywords.some(k => item.normKey.includes(cleanPharmaProductName(k)) || item.primaryName.toUpperCase().includes(k.toUpperCase()));
+                    if (isMatched) matchedCategories.push(catName);
+                }
+                if (matchedCategories.length === 0) matchedCategories.push("Other Products");
+
+                const productObj = {
+                    itemName: item.primaryName,
+                    allVariations: item.allVariations,
+                    division: item.division,
+                    categories: matchedCategories,
+                    closingStock: stock,
+                    netSale: item.netSale,
+                    dailySale: Math.round(daily * 10) / 10,
+                    coverDays: Math.round(coverDays * 10) / 10,
+                    isCritical: isCritical,
+                    needsReorder: needsReorder,
+                    suggestedQty: suggestedQty,
+                    favSupplier: topSupplier,
+                    orderCount: orderCount
+                };
+
+                cleanProductsMaster.push(productObj);
+
+                if (needsReorder && suggestedQty > 0) {
+                    calculatedOrders.push(productObj);
+
+                    if (!supplierMap[topSupplier]) supplierMap[topSupplier] = [];
+                    supplierMap[topSupplier].push(productObj);
+
+                    if (!divisionMap[item.division]) divisionMap[item.division] = [];
+                    divisionMap[item.division].push(productObj);
+
+                    matchedCategories.forEach(catName => {
+                        if (!categoryMap[catName]) categoryMap[catName] = [];
+                        categoryMap[catName].push(productObj);
+                    });
+                }
+            });
+
+            // If selectedDivisions is empty, select top divisions that actually have reorders
+            if (selectedDivisions.size === 0) {
+                const availableDivsWithOrders = Object.keys(divisionMap);
+                if (availableDivsWithOrders.length > 0) {
+                    // Pick top 3 divisions by default so UI renders instantly without freezing
+                    availableDivsWithOrders.slice(0, 3).forEach(d => selectedDivisions.add(d));
+                } else if (allDivisionsList.length > 0) {
+                    selectedDivisions.add(allDivisionsList[0]);
+                }
+            }
+
+            renderDivisionCheckboxes();
+            updateSingleDropdown();
+
+            // Show sections
+            document.getElementById('statsSection').classList.remove('hidden');
+            const outSec = document.getElementById('outputSection');
+            outSec.classList.remove('hidden');
+
+            document.getElementById('statTotalSkus').innerText = cleanProductsMaster.length;
+            document.getElementById('statReorderCount').innerText = calculatedOrders.length;
+            document.getElementById('statCriticalCount').innerText = criticalCount;
+            const totalUnits = calculatedOrders.reduce((sum, it) => sum + it.suggestedQty, 0);
+            document.getElementById('statTotalUnits').innerText = totalUnits.toLocaleString();
+
+            renderCards();
+
+            // Smooth scroll down to output
+            outSec.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        window.switchMode = function(mode) {
+            currentMode = mode;
+            document.getElementById('modeDivisionBtn').className = mode === 'DIVISION' ? "px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow" : "px-4 py-2 bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-xl text-xs font-bold flex items-center gap-1.5";
+            document.getElementById('modeSupplierBtn').className = mode === 'SUPPLIER' ? "px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow" : "px-4 py-2 bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-xl text-xs font-bold flex items-center gap-1.5";
+            document.getElementById('modeCategoryBtn').className = mode === 'CATEGORY' ? "px-4 py-2 bg-indigo-600 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow" : "px-4 py-2 bg-slate-100 text-slate-700 hover:bg-slate-200 rounded-xl text-xs font-bold flex items-center gap-1.5";
+
+            if (mode === 'DIVISION') {
+                document.getElementById('divisionSelectRow').classList.remove('hidden');
+                document.getElementById('dropdownFilterRow').classList.add('hidden');
+            } else {
+                document.getElementById('divisionSelectRow').classList.add('hidden');
+                document.getElementById('dropdownFilterRow').classList.remove('hidden');
+                updateSingleDropdown();
+            }
+            renderCards();
+        };
+
+        window.setScope = function(scope) {
+            currentScope = scope;
+            document.getElementById('scopeCriticalBtn').className = scope === 'CRITICAL' ? "px-3.5 py-1.5 bg-rose-600 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-sm" : "px-3.5 py-1.5 text-slate-700 hover:bg-slate-200 rounded-lg text-xs font-bold flex items-center gap-1.5";
+            document.getElementById('scopeOverallBtn').className = scope === 'OVERALL' ? "px-3.5 py-1.5 bg-slate-800 text-white rounded-lg text-xs font-bold flex items-center gap-1.5 shadow-sm" : "px-3.5 py-1.5 text-slate-700 hover:bg-slate-200 rounded-lg text-xs font-bold flex items-center gap-1.5";
+            renderCards();
+        };
+
+        function renderDivisionCheckboxes(filterText="") {
+            const container = document.getElementById('divisionCheckboxContainer');
+            container.innerHTML = "";
+            const query = filterText.toLowerCase().trim();
+
+            allDivisionsList.forEach(divName => {
+                if (query && !divName.toLowerCase().includes(query)) return;
+
+                const isChecked = selectedDivisions.has(divName);
+                const count = (divisionMap[divName] || []).length;
+                const label = document.createElement('label');
+                label.className = `inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium cursor-pointer border transition ${isChecked ? 'bg-blue-600 text-white border-blue-700 font-bold shadow-xs' : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-100'}`;
+                label.innerHTML = `
+                    <input type="checkbox" value="${divName}" ${isChecked ? 'checked' : ''} onchange="toggleDivision('${encodeURIComponent(divName)}', this.checked)" class="accent-blue-600 rounded">
+                    <span>${divName}</span>
+                    <span class="text-[10px] ${isChecked ? 'text-blue-100' : 'text-slate-400'}">(${count})</span>
+                `;
+                container.appendChild(label);
+            });
+        }
+
+        window.filterDivisionList = function(val) {
+            renderDivisionCheckboxes(val);
+        };
+
+        window.toggleDivision = function(encodedDiv, checked) {
+            const div = decodeURIComponent(encodedDiv);
+            if (checked) selectedDivisions.add(div);
+            else selectedDivisions.delete(div);
+            renderCards();
+        };
+
+        window.selectAllDivisions = function(select) {
+            if (select) allDivisionsList.forEach(d => selectedDivisions.add(d));
+            else selectedDivisions.clear();
+            renderDivisionCheckboxes(document.getElementById('divisionSearchBox').value);
+            renderCards();
+        };
+
+        function updateSingleDropdown() {
+            const filterEl = document.getElementById('singleDropdownFilter');
+            filterEl.innerHTML = '<option value="ALL">Sabhi Dekhein (All)</option>';
+            const targetMap = currentMode === 'SUPPLIER' ? supplierMap : categoryMap;
+            Object.keys(targetMap).sort().forEach(k => {
+                const opt = document.createElement('option');
+                opt.value = k;
+                opt.innerText = `${k} (${targetMap[k].length} items)`;
+                filterEl.appendChild(opt);
+            });
+        }
+
+        document.getElementById('singleDropdownFilter').addEventListener('change', renderCards);
+
+        function renderCards() {
+            const container = document.getElementById('cardsContainer');
+            container.innerHTML = "";
+
+            let targetMap = currentMode === 'DIVISION' ? divisionMap : (currentMode === 'SUPPLIER' ? supplierMap : categoryMap);
+            let themeBg = currentMode === 'CATEGORY' ? "bg-indigo-950" : "bg-slate-900";
+            let badgeBg = currentMode === 'CATEGORY' ? "bg-purple-600" : (currentMode === 'SUPPLIER' ? "bg-indigo-600" : "bg-blue-600");
+            let modeTitle = currentMode === 'CATEGORY' ? "Custom Category PO" : (currentMode === 'SUPPLIER' ? "Supplier Purchase Order" : "Division-wise PO");
+
+            let groupsToShow = [];
+            if (currentMode === 'DIVISION') {
+                groupsToShow = Array.from(selectedDivisions);
+            } else {
+                const sel = document.getElementById('singleDropdownFilter').value;
+                groupsToShow = sel === 'ALL' ? Object.keys(targetMap).sort() : [sel];
+            }
+
+            let renderedCardCount = 0;
+
+            groupsToShow.forEach((groupName, gIdx) => {
+                let items = targetMap[groupName] || [];
+                if (currentScope === 'CRITICAL') {
+                    items = items.filter(it => it.isCritical);
+                }
+                if (items.length === 0) return;
+                renderedCardCount++;
+
+                const poId = `PO-${currentMode.substring(0,3)}-${String(gIdx+1).padStart(2,'0')}`;
+                const totalQty = items.reduce((sum, it) => sum + it.suggestedQty, 0);
+
+                const card = document.createElement('div');
+                card.className = "bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden mb-6";
+
+                let waText = `*PURCHASE ORDER: ${poId}*\n*${currentMode}:* ${groupName} [${currentScope === 'CRITICAL' ? 'CRITICAL ONLY' : 'OVERALL'}]\n*From:* Sharda Medical Agency\n------------------------\n`;
+                items.forEach((it, idx) => {
+                    waText += `${idx+1}. ${it.itemName} - *${it.suggestedQty} Units* (Stock: ${it.closingStock}, Cover: ${it.coverDays}d) [Fav: ${it.favSupplier}]\n`;
+                });
+                waText += `------------------------\n*Total Qty:* ${totalQty} Units\nKripya dispatch schedule confirm karein.`;
+
+                card.innerHTML = `
+                    <div class="${themeBg} text-white p-4 sm:p-5 flex flex-wrap justify-between items-center gap-4">
+                        <div>
+                            <div class="flex items-center space-x-2">
+                                <span class="${badgeBg} text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">${modeTitle}</span>
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold ${currentScope === 'CRITICAL' ? 'bg-rose-600 text-white' : 'bg-slate-700 text-slate-200'}">
+                                    ${currentScope === 'CRITICAL' ? '🚨 CRITICAL (< 5 DAYS)' : '📦 OVERALL PRODUCTS'}
+                                </span>
+                                <span class="text-xs text-slate-400 font-mono">${poId}</span>
+                            </div>
+                            <h2 class="text-lg font-bold text-white mt-1">${groupName}</h2>
+                            <p class="text-xs text-slate-400">Total Items: <b>${items.length}</b> | Suggested Order: <b>${totalQty} Units</b></p>
+                        </div>
+                        <div class="flex items-center space-x-2 no-print">
+                            <button onclick="copyToClipboard('${encodeURIComponent(waText)}')" class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold rounded-lg flex items-center gap-1.5 shadow">
+                                <i data-lucide="message-square" class="w-3.5 h-3.5"></i> Copy WhatsApp
+                            </button>
+                            <button onclick="downloadGroupExcel('${encodeURIComponent(groupName)}')" class="px-3.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-white border border-slate-600 text-xs font-semibold rounded-lg flex items-center gap-1.5">
+                                <i data-lucide="download" class="w-3.5 h-3.5"></i> Export Excel
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm">
+                            <thead class="bg-slate-100 text-slate-700 text-xs uppercase font-semibold border-b border-slate-200">
+                                <tr>
+                                    <th class="py-3 px-4 w-12 text-center">#</th>
+                                    <th class="py-3 px-4">Product Name (Clean Master)</th>
+                                    ${currentMode !== 'DIVISION' ? '<th class="py-3 px-4">Division</th>' : ''}
+                                    ${currentMode !== 'SUPPLIER' ? '<th class="py-3 px-4">Favourite Supplier</th>' : ''}
+                                    <th class="py-3 px-4 text-right">Closing Stock</th>
+                                    <th class="py-3 px-4 text-right">Daily Sale</th>
+                                    <th class="py-3 px-4 text-center">Stock Cover</th>
+                                    <th class="py-3 px-4 text-right bg-blue-50/70 text-blue-900 font-bold">Suggested PO Qty</th>
+                                    <th class="py-3 px-4 text-center">Bills</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 font-medium text-slate-700">
+                                ${items.map((it, idx) => `
+                                    <tr class="hover:bg-slate-50 transition">
+                                        <td class="py-3 px-4 text-center text-xs text-slate-400">${idx+1}</td>
+                                        <td class="py-3 px-4">
+                                            <div class="text-slate-900 font-semibold">${it.itemName}</div>
+                                            ${it.allVariations.length > 1 ? `<div class="text-[10px] text-emerald-700 font-medium mt-0.5">Merged: ${it.allVariations.join(' + ')}</div>` : ''}
+                                            <div class="flex flex-wrap gap-1 mt-1">
+                                                ${it.categories.map(c => `<span class="text-[9px] bg-indigo-50 text-indigo-700 px-1.5 py-0.2 rounded font-semibold border border-indigo-200">${c}</span>`).join('')}
+                                            </div>
+                                        </td>
+                                        ${currentMode !== 'DIVISION' ? `<td class="py-3 px-4 text-xs text-slate-600 font-medium">${it.division}</td>` : ''}
+                                        ${currentMode !== 'SUPPLIER' ? `<td class="py-3 px-4 text-xs font-bold text-blue-700">${it.favSupplier}</td>` : ''}
+                                        <td class="py-3 px-4 text-right text-xs text-slate-800 font-bold">${it.closingStock}</td>
+                                        <td class="py-3 px-4 text-right text-xs text-slate-500">${it.dailySale || '-'}</td>
+                                        <td class="py-3 px-4 text-center text-xs">
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full font-bold text-[11px] ${it.isCritical ? 'bg-rose-100 text-rose-800' : 'bg-amber-100 text-amber-800'}">
+                                                ${it.coverDays < 99 ? it.coverDays + ' Days' : '>30 Days'}
+                                            </span>
+                                        </td>
+                                        <td class="py-3 px-4 text-right text-sm font-bold text-blue-600 bg-blue-50/40">${it.suggestedQty} Units</td>
+                                        <td class="py-3 px-4 text-center text-xs text-slate-500">
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-emerald-100 text-emerald-800">${it.orderCount}</span>
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                            <tfoot class="bg-slate-50 border-t border-slate-200 font-semibold">
+                                <tr>
+                                    <td colspan="${currentMode === 'DIVISION' ? 5 : 6}" class="py-3 px-4 text-right text-xs uppercase text-slate-600">Total Items: ${items.length}</td>
+                                    <td colspan="2" class="py-3 px-4 text-right text-blue-700 font-bold bg-blue-50/70">${totalQty} Units</td>
+                                    <td></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+
+            if (renderedCardCount === 0) {
+                container.innerHTML = `
+                    <div class="bg-white p-8 rounded-2xl text-center border border-slate-200">
+                        <i data-lucide="shield-check" class="w-12 h-12 text-emerald-500 mx-auto mb-2"></i>
+                        <h3 class="font-bold text-slate-800">Koi Reorder Requirement Nahi Hai!</h3>
+                        <p class="text-xs text-slate-500 mt-1">${currentScope === 'CRITICAL' ? 'Selected filter me koi bhi item 5 din se kam cover par nahi hai.' : 'Sabhi items ka stock sufficient hai.'}</p>
+                    </div>
+                `;
+            }
+            lucide.createIcons();
+        }
+
+        // Live Product Search
+        document.getElementById('productSearchInput').addEventListener('input', function(e) {
+            const query = e.target.value.trim().toLowerCase();
+            const resultBox = document.getElementById('productSearchResult');
+            if (query.length < 2) {
+                resultBox.classList.add('hidden');
+                resultBox.innerHTML = "";
+                return;
+            }
+            if (cleanProductsMaster.length === 0) {
+                resultBox.classList.remove('hidden');
+                resultBox.innerHTML = `<div class="p-3 bg-amber-50 text-xs text-amber-800 rounded-xl">Pehle upar se Stock Statement upload karein ya Demo Data load karein!</div>`;
+                return;
+            }
+
+            const matched = cleanProductsMaster.filter(p => 
+                p.itemName.toLowerCase().includes(query) || 
+                p.allVariations.some(v => v.toLowerCase().includes(query)) ||
+                p.division.toLowerCase().includes(query) ||
+                p.categories.some(c => c.toLowerCase().includes(query))
+            );
+
+            if (matched.length === 0) {
+                resultBox.classList.remove('hidden');
+                resultBox.innerHTML = `<div class="p-4 bg-white border border-slate-200 rounded-xl text-center text-xs text-slate-500">"${e.target.value}" naam se koi product nahi mila.</div>`;
+                return;
+            }
+
+            resultBox.classList.remove('hidden');
+            resultBox.innerHTML = `
+                <div class="bg-white border border-blue-200 rounded-xl shadow-md overflow-hidden">
+                    <div class="px-4 py-2 bg-slate-100 text-xs text-slate-600 font-semibold flex justify-between">
+                        <span>Matched Products (${matched.length})</span>
+                        <span class="text-blue-600">Live Combined Stock & Favourite Supplier</span>
+                    </div>
+                    <div class="divide-y divide-slate-100">
+                        ${matched.map(item => `
+                            <div class="p-4 hover:bg-blue-50/30 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                                <div class="space-y-1">
+                                    <div class="flex items-center space-x-2">
+                                        <h4 class="text-sm font-bold text-slate-900">${item.itemName}</h4>
+                                        <span class="text-[11px] font-semibold bg-blue-50 text-blue-700 px-2 py-0.5 rounded border border-blue-200">${item.division}</span>
+                                    </div>
+                                    <div class="flex flex-wrap items-center gap-1.5 mt-1">
+                                        ${item.categories.map(c => `<span class="text-[10px] font-bold bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded">🏷️ ${c}</span>`).join('')}
+                                    </div>
+                                    ${item.allVariations.length > 1 ? `<div class="text-[11px] text-emerald-700 font-medium">🔗 Merged Variations: ${item.allVariations.join(', ')}</div>` : ''}
+                                    <div class="text-xs text-slate-600">Favourite Supplier: <b class="text-slate-900">${item.favSupplier}</b> (${item.orderCount} past bills)</div>
+                                </div>
+                                <div class="flex items-center space-x-3 text-center">
+                                    <div class="px-3 py-1.5 rounded-lg bg-blue-50 border border-blue-200 min-w-[75px]">
+                                        <span class="text-[10px] text-blue-700 block uppercase font-bold">Stock</span>
+                                        <span class="text-sm font-extrabold text-blue-900">${item.closingStock}</span>
+                                    </div>
+                                    <div class="px-3 py-1.5 rounded-lg bg-slate-100 border border-slate-200 min-w-[75px]">
+                                        <span class="text-[10px] text-slate-500 block uppercase font-medium">Daily Sale</span>
+                                        <span class="text-sm font-bold text-slate-800">${item.dailySale || '-'}</span>
+                                    </div>
+                                    <div class="px-3 py-1.5 rounded-lg min-w-[80px] ${item.isCritical ? 'bg-rose-100 border border-rose-300 text-rose-900' : 'bg-emerald-50 border border-emerald-200 text-emerald-800'}">
+                                        <span class="text-[10px] block uppercase font-bold">Cover</span>
+                                        <span class="text-sm font-extrabold">${item.coverDays < 99 ? item.coverDays + ' Days' : '>30d'}</span>
+                                    </div>
+                                    <div class="px-3 py-1.5 rounded-lg min-w-[95px] ${item.suggestedQty > 0 ? 'bg-amber-100 border border-amber-300 text-amber-900' : 'bg-slate-100 border border-slate-200 text-slate-600'}">
+                                        <span class="text-[10px] block uppercase font-bold">${item.suggestedQty > 0 ? 'Suggested PO' : 'Stock OK'}</span>
+                                        <span class="text-sm font-extrabold">${item.suggestedQty > 0 ? item.suggestedQty + ' Units' : '0'}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            lucide.createIcons();
+        });
+
+        window.copyToClipboard = function(encodedText) {
+            navigator.clipboard.writeText(decodeURIComponent(encodedText)).then(() => alert("WhatsApp Order Text Clipboard par copy ho gaya!"));
+        };
+
+        window.downloadGroupExcel = function(encodedGroup) {
+            const groupName = decodeURIComponent(encodedGroup);
+            let targetMap = currentMode === 'SUPPLIER' ? supplierMap : (currentMode === 'DIVISION' ? divisionMap : categoryMap);
+            let items = targetMap[groupName] || [];
+            if (currentScope === 'CRITICAL') items = items.filter(it => it.isCritical);
+            if (items.length === 0) return;
+
+            const exportData = items.map((it, idx) => ({
+                "S.No": idx + 1,
+                "Product Name": it.itemName,
+                "Merged Variations": it.allVariations.join(" | "),
+                "Division": it.division,
+                "Favourite Supplier": it.favSupplier,
+                "Closing Stock": it.closingStock,
+                "Daily Sale": it.dailySale,
+                "Cover Days": it.coverDays,
+                "Critical Status": it.isCritical ? "CRITICAL (<5 Days)" : "NORMAL",
+                "Suggested PO Qty": it.suggestedQty,
+                "Supplier Bills": it.orderCount
+            }));
+
+            const ws = XLSX.utils.json_to_sheet(exportData);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "PO_Sheet");
+            XLSX.writeFile(wb, `PO_${currentMode}_${groupName.replace(/[^a-zA-Z0-9]/g, '_')}_${currentScope}.xlsx`);
+        };
+
+        document.getElementById('exportAllExcelBtn').addEventListener('click', function() {
+            let itemsToExport = calculatedOrders;
+            if (currentScope === 'CRITICAL') itemsToExport = itemsToExport.filter(it => it.isCritical);
+            if (itemsToExport.length === 0) return;
+
+            const exportData = itemsToExport.map((it, idx) => ({
+                "S.No": idx + 1,
+                "Product Name": it.itemName,
+                "Merged Variations": it.allVariations.join(" | "),
+                "Division": it.division,
+                "Favourite Supplier": it.favSupplier,
+                "Closing Stock": it.closingStock,
+                "Daily Sale": it.dailySale,
+                "Cover Days": it.coverDays,
+                "Critical Status": it.isCritical ? "CRITICAL (<5 Days)" : "NORMAL",
+                "Suggested PO Qty": it.suggestedQty,
+                "Supplier Bills": it.orderCount
+            }));
+
+            const ws = XLSX.utils.json_to_sheet(exportData);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Consolidated_POs");
+            XLSX.writeFile(wb, `Consolidated_Purchase_Orders_${currentScope}.xlsx`);
+        });
+
+    </script>
+</body>
+</html>
