@@ -29,7 +29,7 @@
             </div>
             <div>
                 <h1 class="text-xl font-bold tracking-tight">AI Purchase Copilot Pro</h1>
-                <p class="text-xs text-slate-400">Sharda Medical Agency • Exact Software Columns • Multi-Division & Category PO</p>
+                <p class="text-xs text-slate-400">Sharda Medical Agency • Max Sales Rule [Col E, F, (K-L)] • 100% Exact SKU (No Merging)</p>
             </div>
         </div>
         <div class="flex items-center space-x-2">
@@ -52,12 +52,13 @@
                             <i data-lucide="file-spreadsheet" class="w-5 h-5"></i>
                             <span>1. Stock File (SS N 061126)</span>
                         </div>
-                        <span class="text-[10px] bg-blue-50 text-blue-700 font-bold px-2 py-0.5 rounded">Col B, D, K, L, T</span>
+                        <span class="text-[10px] bg-blue-50 text-blue-700 font-bold px-2 py-0.5 rounded">Exact B, D, E, F, K, L, T</span>
                     </div>
-                    <div class="text-[11px] text-slate-500 mb-3 space-y-0.5 bg-slate-50 p-2 rounded-lg font-mono">
+                    <div class="text-[11px] text-slate-500 mb-3 space-y-0.5 bg-slate-50 p-2.5 rounded-lg font-mono">
                         <div><b>B:</b> Division | <b>D:</b> Product Name</div>
-                        <div><b>K:</b> Duration Sale | <b>L:</b> Special Sale (-)</div>
-                        <div><b>T:</b> Closing Stock</div>
+                        <div><b>E:</b> M1 Sale | <b>F:</b> M2 Sale | <b>K:</b> Dur. Sale</div>
+                        <div><b>L:</b> Special Sale (-) | <b>T:</b> Closing Stock</div>
+                        <div class="text-blue-700 font-sans font-bold text-[10px] pt-1">Rule: Max of [E, F, (K-L)] = Final Sale</div>
                     </div>
 
                     <div class="p-3 bg-slate-50 rounded-xl border border-slate-300">
@@ -85,12 +86,12 @@
                             <i data-lucide="history" class="w-5 h-5"></i>
                             <span>2. Purchase Register File</span>
                         </div>
-                        <span class="text-[10px] bg-indigo-50 text-indigo-700 font-bold px-2 py-0.5 rounded">Col E, F, G, P</span>
+                        <span class="text-[10px] bg-indigo-50 text-indigo-700 font-bold px-2 py-0.5 rounded">Exact E, F, G, P</span>
                     </div>
-                    <div class="text-[11px] text-slate-500 mb-3 space-y-0.5 bg-slate-50 p-2 rounded-lg font-mono">
+                    <div class="text-[11px] text-slate-500 mb-3 space-y-0.5 bg-slate-50 p-2.5 rounded-lg font-mono">
                         <div><b>E:</b> Product Name | <b>F:</b> Date | <b>G:</b> Qty</div>
                         <div><b>P:</b> Supplier (Bills Frequency Count)</div>
-                        <div class="text-indigo-600 font-bold text-[10px]">Strictly No Rate Comparison</div>
+                        <div class="text-indigo-600 font-sans font-bold text-[10px] pt-1">Strictly No Rate Comparison (Frequency Match)</div>
                     </div>
 
                     <div class="p-3 bg-slate-50 rounded-xl border border-slate-300">
@@ -164,34 +165,20 @@
         <div class="bg-white p-5 rounded-2xl shadow-sm border border-blue-200 bg-gradient-to-r from-blue-50/50 via-white to-indigo-50/30 no-print">
             <div class="flex items-center space-x-2 mb-3 text-blue-900 font-bold">
                 <i data-lucide="search" class="w-5 h-5 text-blue-600"></i>
-                <h3 class="text-base">Instant Product Search (Live Combined Stock, Daily Sale, Cover Days & Favourite Supplier)</h3>
+                <h3 class="text-base">Instant Product Search (Live Exact Stock, Max Sale, Cover Days & Favourite Supplier)</h3>
             </div>
             <div class="relative">
-                <input type="text" id="productSearchInput" placeholder="Product ka naam type karein (e.g. BITATEL, DOLO, AUGMENTIN, PAN D, MIGRABETA)..." 
+                <input type="text" id="productSearchInput" placeholder="Product ka naam type karein (e.g. DONEP 5, DONEP 10, BITATEL, DOLO, AUGMENTIN)..." 
                        class="w-full pl-11 pr-4 py-3 bg-white border border-slate-300 rounded-xl text-sm font-medium focus:ring-2 focus:ring-blue-600 shadow-sm">
                 <i data-lucide="search" class="w-5 h-5 text-slate-400 absolute left-3.5 top-3.5"></i>
             </div>
             <div id="productSearchResult" class="mt-4 hidden space-y-3"></div>
         </div>
 
-        <!-- Deduplication Notice Box -->
-        <div id="dedupAlertBox" class="hidden bg-emerald-50 border border-emerald-200 rounded-2xl p-4 no-print">
-            <div class="flex items-start gap-3">
-                <div class="p-2 bg-emerald-100 rounded-lg text-emerald-700 mt-0.5">
-                    <i data-lucide="copy-check" class="w-5 h-5"></i>
-                </div>
-                <div class="flex-1">
-                    <h4 class="text-sm font-bold text-emerald-900">Smart Deduplication Report: <span id="mergedItemsCount">0</span> Duplicate Variations Merged!</h4>
-                    <p class="text-xs text-emerald-700 mt-0.5">Similar packings/codes ka stock aur sales apas me PLUS karke clean master banaya gaya hai.</p>
-                    <div id="mergedDetailsList" class="mt-2 text-xs text-emerald-800 space-y-1 font-mono max-h-32 overflow-y-auto"></div>
-                </div>
-            </div>
-        </div>
-
         <!-- Dashboard Statistics -->
         <div id="statsSection" class="hidden grid grid-cols-2 sm:grid-cols-4 gap-4 no-print">
             <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-                <span class="text-xs font-medium text-slate-500">Unique Clean Products</span>
+                <span class="text-xs font-medium text-slate-500">Total Unique SKUs</span>
                 <p id="statTotalSkus" class="text-2xl font-bold text-slate-900 mt-1">0</p>
             </div>
             <div class="bg-white p-4 rounded-xl border border-amber-200 bg-amber-50/40 shadow-sm">
@@ -391,21 +378,14 @@
             return String(str).replace(/\0/g, '').replace(/\x00/g, '').trim();
         }
 
-        function cleanPharmaProductName(str) {
+        function cleanProductKey(str) {
             if (!str) return "";
             let s = cleanString(str);
             s = s.replace(/@+/g, '');
             s = s.replace(/\(dis\s*[\d\.]+%/gi, '');
-            s = s.replace(/-\s*\d+.*$/g, '');
             s = s.replace(/[\.\,\/\-\_\(\)\[\]]/g, ' ');
-            s = s.replace(/(\d+)\s*(mg|gm|ml|mcg|iu)/gi, '$1$2');
-            s = s.replace(/(\d+)mg/gi, '$1');
-            s = s.replace(/\b(tablets|tablet|tabs|tab|tb)\b/gi, 'tab');
-            s = s.replace(/\b(capsules|capsule|cap|caps)\b/gi, 'cap');
-            s = s.replace(/\b(syrup|syp|suspension|susp)\b/gi, 'syp');
-            let tokens = s.toLowerCase().split(/\s+/).filter(t => t.length > 0 && t !== 'tab' && t !== 'cap' && t !== 'syp' && t !== 'dis');
-            tokens.sort();
-            return tokens.join(' ');
+            s = s.replace(/\s+/g, ' ').trim().toUpperCase();
+            return s;
         }
 
         function parseNum(val) {
@@ -650,28 +630,27 @@
             });
         }
 
-        // Demo Data Loader
+        // Demo Data Loader (Matches Exact User Columns)
         const demoBtn = document.getElementById('loadSampleBtn');
         if (demoBtn) {
             demoBtn.addEventListener('click', function() {
                 rawStockData = [
                     ["item_code", "mfac_name", "stock_c_item_code", "c_name", "n1", "n1_1", "n1_2", "n1_3", "n1_4", "n1_5", "n1_6", "n1_7", "n1_8", "n1_9", "n1_10", "n1_11", "n1_12", "n1_13", "n1_14", "n1_15"],
-                    ["MD0001", "4 CARE LIFESCIENCE", "P07176", "BITATEL 40 TAB  (DIS 6%) - 10 TAB", 34, 53, 0, 0, 0, 0, 51, 0, 0, 0, 0, 0, 0, 0, 0, 15],
-                    ["MD0001", "4 CARE LIFESCIENCE", "P07177", "BITATEL AM TAB  (DIS 6%) - 10 TAB", 98, 65, 0, 0, 0, 0, 71, 0, 0, 0, 0, 0, 0, 0, 0, 6],
-                    ["MD0001", "4 CARE LIFESCIENCE", "P07465", "BITATEL M 50 TAB  (DIS 6%) - 10 TAB", 112, 57, 0, 0, 0, 0, 204, 50, 0, 0, 0, 0, 0, 0, 0, 12],
-                    ["MD0002", "ABBOT HEALTHCARE JANUS", "P08101", "DOLO 650 MG TAB  (DIS 5%) - 15 TAB", 40, 50, 0, 0, 0, 0, 180, 0, 0, 0, 0, 0, 0, 0, 0, 10],
-                    ["MD0002", "ABBOT HEALTHCARE JANUS", "P08102", "DOLO 650 TAB - 15 TAB", 50, 40, 0, 0, 0, 0, 150, 0, 0, 0, 0, 0, 0, 0, 0, 8],
-                    ["MD0003", "ZYDUS CADILA CARDIO", "P09201", "AUGMENTIN 625 DUO TAB  (DIS 8%) - 10 TAB", 120, 140, 0, 0, 0, 0, 300, 0, 0, 0, 0, 0, 0, 0, 0, 14],
-                    ["MD0003", "ZYDUS CADILA CARDIO", "P09202", "PAN D CAPSULE  (DIS 7%) - 10*15", 200, 180, 0, 0, 0, 0, 450, 0, 0, 0, 0, 0, 0, 0, 0, 25]
+                    ["MD0001", "4 CARE LIFESCIENCE", "P07176", "DONEP 5 TAB - 10 TAB", 34, 53, 0, 0, 0, 0, 20, 0, 0, 0, 0, 0, 0, 0, 0, 15],  // E:34, F:53, K:20 -> Max Sale = 53
+                    ["MD0001", "4 CARE LIFESCIENCE", "P07177", "DONEP 10 TAB - 10 TAB", 98, 65, 0, 0, 0, 0, 120, 10, 0, 0, 0, 0, 0, 0, 0, 6], // E:98, F:65, K-L:110 -> Max Sale = 110 (CRITICAL!)
+                    ["MD0001", "4 CARE LIFESCIENCE", "P07465", "DONEP SYP 60ML", 15, 20, 0, 0, 0, 0, 25, 0, 0, 0, 0, 0, 0, 0, 0, 12],       // Independent SYP, not merged with TAB!
+                    ["MD0002", "ABBOT HEALTHCARE JANUS", "P08101", "DOLO 650 MG TAB - 15 TAB", 40, 50, 0, 0, 0, 0, 180, 0, 0, 0, 0, 0, 0, 0, 0, 10], 
+                    ["MD0002", "ABBOT HEALTHCARE JANUS", "P08102", "DOLO 500 TAB - 15 TAB", 50, 40, 0, 0, 0, 0, 150, 0, 0, 0, 0, 0, 0, 0, 0, 8],
+                    ["MD0003", "ZYDUS CADILA CARDIO", "P09201", "AUGMENTIN 625 DUO TAB", 120, 140, 0, 0, 0, 0, 300, 0, 0, 0, 0, 0, 0, 0, 0, 14],
+                    ["MD0003", "ZYDUS CADILA CARDIO", "P09202", "PAN D CAPSULE", 200, 180, 0, 0, 0, 0, 450, 0, 0, 0, 0, 0, 0, 0, 0, 25]
                 ];
 
                 rawPurchData = [
                     ["A", "B", "C", "D", "Product Name", "Date", "Qty", "H", "I", "J", "K", "L", "M", "N", "O", "Supplier"],
-                    ["", "", "", "", "BITATEL 40 TAB  (DIS 6%) - 10 TAB", "01/10/2026", 100, "", "", "", "", "", "", "", "", "SHARDA PHARMA  (PURCHASE)"],
-                    ["", "", "", "", "BITATEL 40 TAB  (DIS 6%) - 10 TAB", "15/10/2026", 100, "", "", "", "", "", "", "", "", "SHARDA PHARMA  (PURCHASE)"],
-                    ["", "", "", "", "BITATEL AM TAB  (DIS 6%) - 10 TAB", "05/10/2026", 150, "", "", "", "", "", "", "", "", "SUN PHARMA DISTRIBUTORS"],
-                    ["", "", "", "", "DOLO 650 MG TAB  (DIS 5%) - 15 TAB", "02/10/2026", 500, "", "", "", "", "", "", "", "", "MICRO LABS AGENCY"],
-                    ["", "", "", "", "DOLO 650 TAB - 15 TAB", "12/10/2026", 400, "", "", "", "", "", "", "", "", "MICRO LABS AGENCY"],
+                    ["", "", "", "", "DONEP 5 TAB - 10 TAB", "01/10/2026", 100, "", "", "", "", "", "", "", "", "SHARDA PHARMA (PURCHASE)"],
+                    ["", "", "", "", "DONEP 10 TAB - 10 TAB", "15/10/2026", 100, "", "", "", "", "", "", "", "", "SUN PHARMA DISTRIBUTORS"],
+                    ["", "", "", "", "DONEP SYP 60ML", "05/10/2026", 50, "", "", "", "", "", "", "", "", "4 CARE LOGISTICS"],
+                    ["", "", "", "", "DOLO 650 MG TAB - 15 TAB", "02/10/2026", 500, "", "", "", "", "", "", "", "", "MICRO LABS AGENCY"],
                     ["", "", "", "", "AUGMENTIN 625 DUO TAB", "04/10/2026", 300, "", "", "", "", "", "", "", "", "GLAXO SMITHKLINE DEPOT"],
                     ["", "", "", "", "PAN D CAPSULE", "07/10/2026", 400, "", "", "", "", "", "", "", "", "ALKEM LABORATORIES AGENCY"]
                 ];
@@ -689,7 +668,7 @@
         }
 
         // -------------------------------------------------------------
-        // PROCESS ENGINE
+        // PROCESS ENGINE (MAX SALES RULE + ZERO MERGING)
         // -------------------------------------------------------------
         const processButton = document.getElementById('processBtn');
         if (processButton) {
@@ -712,7 +691,7 @@
             const criticalDays = parseFloat(document.getElementById('criticalDays').value) || 5;
 
             // 1. Process Purchase Register
-            const normItemSupplierFreq = {};
+            const itemSupplierFreq = {};
             for (let r = 1; r < rawPurchData.length; r++) {
                 const row = rawPurchData[r];
                 if (!row || row.length === 0) continue;
@@ -721,16 +700,23 @@
                 const suppRaw = cleanString(row[15]);
 
                 if (prodRaw && suppRaw) {
-                    const normKey = cleanPharmaProductName(prodRaw);
-                    if (!normItemSupplierFreq[normKey]) normItemSupplierFreq[normKey] = {};
-                    normItemSupplierFreq[normKey][suppRaw] = (normItemSupplierFreq[normKey][suppRaw] || 0) + 1;
+                    const matchKey = cleanProductKey(prodRaw);
+                    if (!itemSupplierFreq[matchKey]) itemSupplierFreq[matchKey] = {};
+                    itemSupplierFreq[matchKey][suppRaw] = (itemSupplierFreq[matchKey][suppRaw] || 0) + 1;
                 }
             }
 
-            // 2. Process Stock Statement
-            const mergedStockMap = {};
-            const deduplicationAudit = [];
+            // 2. Process Stock Statement:
+            // STRICTLY ZERO MERGING: Every row is an independent product (Donep 5 != Donep 10, Tab != Syp)
+            // EXACT SALES RULE: Max of [ Col E (M1), Col F (M2), Col K - Col L (Net Duration Sale) ]
+            cleanProductsMaster = [];
+            calculatedOrders = [];
+            supplierMap = {};
+            divisionMap = {};
+            categoryMap = {};
+
             const divisionsSet = new Set();
+            let criticalCount = 0;
 
             for (let r = 1; r < rawStockData.length; r++) {
                 const row = rawStockData[r];
@@ -742,90 +728,50 @@
 
                 divisionsSet.add(division);
 
-                const m1Sale = parseNum(row[4]);
-                const m2Sale = parseNum(row[5]);
-                const durationSale = parseNum(row[10]);
-                const specialSale = parseNum(row[11]);
-                const closingStock = parseNum(row[19]);
+                const m1Sale = parseNum(row[4]);       // Col E (Month 1 Sale)
+                const m2Sale = parseNum(row[5]);       // Col F (Month 2 Sale)
+                const durationSale = parseNum(row[10]); // Col K (Given Duration Sale)
+                const specialSale = parseNum(row[11]);  // Col L (Special Sale)
+                const closingStock = parseNum(row[19]); // Col T (Closing Stock)
 
-                let netSale = 0;
-                if (durationSale > 0) {
-                    netSale = Math.max(0, durationSale - specialSale);
-                } else if ((m1Sale + m2Sale) > 0) {
-                    netSale = Math.max(0, ((m1Sale + m2Sale) / 2) - specialSale);
-                }
+                // Duration Net Sale = Col K - Col L
+                const durationNetSale = Math.max(0, durationSale - specialSale);
 
-                const dailySale = netSale > 0 ? (netSale / 30) : 0;
-                const normKey = cleanPharmaProductName(prodName);
+                // RULE 1: MAX OF COLUMN E, COLUMN F, AUR (K - L)
+                const effectiveMonthlySale = Math.max(m1Sale, m2Sale, durationNetSale);
 
-                if (!mergedStockMap[normKey]) {
-                    mergedStockMap[normKey] = {
-                        primaryName: prodName,
-                        allVariations: [prodName],
-                        division: division,
-                        closingStock: closingStock,
-                        netSale: netSale,
-                        dailySale: dailySale,
-                        normKey: normKey
-                    };
-                } else {
-                    const existing = mergedStockMap[normKey];
-                    existing.closingStock += closingStock;
-                    existing.netSale += netSale;
-                    existing.dailySale += dailySale;
-                    existing.allVariations.push(prodName);
+                // Daily Sale = Effective Sale / 30
+                const dailySale = effectiveMonthlySale > 0 ? (effectiveMonthlySale / 30.0) : 0;
 
-                    deduplicationAudit.push({
-                        masterName: existing.primaryName,
-                        mergedVariation: prodName,
-                        addedStock: closingStock,
-                        totalStock: existing.closingStock
-                    });
-                }
-            }
-
-            allDivisionsList = Array.from(divisionsSet).sort();
-
-            // Deduplication alert
-            const alertBox = document.getElementById('dedupAlertBox');
-            const detailsList = document.getElementById('mergedDetailsList');
-            if (deduplicationAudit.length > 0 && alertBox && detailsList) {
-                alertBox.classList.remove('hidden');
-                safeSetText('mergedItemsCount', deduplicationAudit.length);
-                detailsList.innerHTML = deduplicationAudit.map(d => `
-                    <div>• Merged: <b>"${d.mergedVariation}"</b> (+${d.addedStock} stock) -> Combined in <b>"${d.masterName}"</b> (Total Stock: ${d.totalStock})</div>
-                `).join('');
-            } else if (alertBox) {
-                alertBox.classList.add('hidden');
-            }
-
-            // 3. Build Final Clean Master & PO Pools
-            cleanProductsMaster = [];
-            calculatedOrders = [];
-            supplierMap = {};
-            divisionMap = {};
-            categoryMap = {};
-
-            let criticalCount = 0;
-
-            Object.values(mergedStockMap).forEach(item => {
-                const stock = item.closingStock;
-                const daily = item.dailySale;
-                const coverDays = daily > 0 ? (stock / daily) : (stock > 0 ? 999 : 0);
+                // Cover Days = Closing Stock / Daily Sale
+                const coverDays = dailySale > 0 ? (closingStock / dailySale) : (closingStock > 0 ? 999 : 0);
                 const isCritical = coverDays < criticalDays;
                 if (isCritical) criticalCount++;
 
-                const needsReorder = (daily > 0 && stock < (daily * targetDays)) || (daily === 0 && stock === 0);
+                // Needs reorder if stock is less than target days cover OR stock is 0
+                const needsReorder = (dailySale > 0 && closingStock < (dailySale * targetDays)) || (dailySale === 0 && closingStock === 0);
 
                 let suggestedQty = 0;
-                if (daily > 0) {
-                    suggestedQty = Math.max(0, Math.ceil((daily * targetDays) - stock));
-                } else if (stock === 0) {
-                    suggestedQty = 20;
+                if (dailySale > 0) {
+                    suggestedQty = Math.max(0, Math.ceil((dailySale * targetDays) - closingStock));
+                } else if (closingStock === 0) {
+                    suggestedQty = 20; // Default minimum lot size
                 }
 
-                // Favourite Supplier
-                const suppFreq = normItemSupplierFreq[item.normKey] || {};
+                // Match with Purchase Register to find Favourite Supplier (Exact Key Match)
+                const matchKey = cleanProductKey(prodName);
+                let suppFreq = itemSupplierFreq[matchKey] || {};
+
+                // If no exact match, try substring match with purchase register keys
+                if (Object.keys(suppFreq).length === 0) {
+                    for (let pKey in itemSupplierFreq) {
+                        if (matchKey.includes(pKey) || pKey.includes(matchKey)) {
+                            suppFreq = itemSupplierFreq[pKey];
+                            break;
+                        }
+                    }
+                }
+
                 let maxOrders = -1;
                 let topSupplier = "Direct / Unassigned Supplier";
                 for (let s in suppFreq) {
@@ -840,19 +786,21 @@
                 const matchedCategories = [];
                 for (let catName in customCategories) {
                     const keywords = customCategories[catName];
-                    const isMatched = keywords.some(k => item.normKey.includes(cleanPharmaProductName(k)) || item.primaryName.toUpperCase().includes(k.toUpperCase()));
+                    const isMatched = keywords.some(k => prodName.toUpperCase().includes(k.toUpperCase()) || matchKey.includes(cleanProductKey(k)));
                     if (isMatched) matchedCategories.push(catName);
                 }
                 if (matchedCategories.length === 0) matchedCategories.push("Other Products");
 
                 const productObj = {
-                    itemName: item.primaryName,
-                    allVariations: item.allVariations,
-                    division: item.division,
+                    itemName: prodName,
+                    division: division,
                     categories: matchedCategories,
-                    closingStock: stock,
-                    netSale: item.netSale,
-                    dailySale: Math.round(daily * 10) / 10,
+                    closingStock: closingStock,
+                    m1Sale: m1Sale,
+                    m2Sale: m2Sale,
+                    durationNetSale: durationNetSale,
+                    effectiveMonthlySale: effectiveMonthlySale,
+                    dailySale: Math.round(dailySale * 10) / 10,
                     coverDays: Math.round(coverDays * 10) / 10,
                     isCritical: isCritical,
                     needsReorder: needsReorder,
@@ -869,15 +817,17 @@
                     if (!supplierMap[topSupplier]) supplierMap[topSupplier] = [];
                     supplierMap[topSupplier].push(productObj);
 
-                    if (!divisionMap[item.division]) divisionMap[item.division] = [];
-                    divisionMap[item.division].push(productObj);
+                    if (!divisionMap[division]) divisionMap[division] = [];
+                    divisionMap[division].push(productObj);
 
                     matchedCategories.forEach(catName => {
                         if (!categoryMap[catName]) categoryMap[catName] = [];
                         categoryMap[catName].push(productObj);
                     });
                 }
-            });
+            }
+
+            allDivisionsList = Array.from(divisionsSet).sort();
 
             // Set default selected divisions
             if (selectedDivisions.size === 0) {
@@ -1078,10 +1028,11 @@ Kripya dispatch schedule confirm karein.`;
                             <thead class="bg-slate-100 text-slate-700 text-xs uppercase font-semibold border-b border-slate-200">
                                 <tr>
                                     <th class="py-3 px-4 w-12 text-center">#</th>
-                                    <th class="py-3 px-4">Product Name (Clean Master)</th>
+                                    <th class="py-3 px-4">Product Name (Exact SKU)</th>
                                     ${currentMode !== 'DIVISION' ? '<th class="py-3 px-4">Division</th>' : ''}
                                     ${currentMode !== 'SUPPLIER' ? '<th class="py-3 px-4">Favourite Supplier</th>' : ''}
                                     <th class="py-3 px-4 text-right">Closing Stock</th>
+                                    <th class="py-3 px-4 text-right text-indigo-700">Max Sale [E, F, (K-L)]</th>
                                     <th class="py-3 px-4 text-right">Daily Sale</th>
                                     <th class="py-3 px-4 text-center">Stock Cover</th>
                                     <th class="py-3 px-4 text-right bg-blue-50/70 text-blue-900 font-bold">Suggested PO Qty</th>
@@ -1094,7 +1045,6 @@ Kripya dispatch schedule confirm karein.`;
                                         <td class="py-3 px-4 text-center text-xs text-slate-400">${idx+1}</td>
                                         <td class="py-3 px-4">
                                             <div class="text-slate-900 font-semibold">${it.itemName}</div>
-                                            ${it.allVariations.length > 1 ? `<div class="text-[10px] text-emerald-700 font-medium mt-0.5">Merged: ${it.allVariations.join(' + ')}</div>` : ''}
                                             <div class="flex flex-wrap gap-1 mt-1">
                                                 ${it.categories.map(c => `<span class="text-[9px] bg-indigo-50 text-indigo-700 px-1.5 py-0.2 rounded font-semibold border border-indigo-200">${c}</span>`).join('')}
                                             </div>
@@ -1102,6 +1052,9 @@ Kripya dispatch schedule confirm karein.`;
                                         ${currentMode !== 'DIVISION' ? `<td class="py-3 px-4 text-xs text-slate-600 font-medium">${it.division}</td>` : ''}
                                         ${currentMode !== 'SUPPLIER' ? `<td class="py-3 px-4 text-xs font-bold text-blue-700">${it.favSupplier}</td>` : ''}
                                         <td class="py-3 px-4 text-right text-xs text-slate-800 font-bold">${it.closingStock}</td>
+                                        <td class="py-3 px-4 text-right text-xs text-indigo-700 font-bold" title="M1: ${it.m1Sale}, M2: ${it.m2Sale}, Net Dur: ${it.durationNetSale}">
+                                            ${it.effectiveMonthlySale}
+                                        </td>
                                         <td class="py-3 px-4 text-right text-xs text-slate-500">${it.dailySale || '-'}</td>
                                         <td class="py-3 px-4 text-center text-xs">
                                             <span class="inline-flex items-center px-2 py-0.5 rounded-full font-bold text-[11px] ${it.isCritical ? 'bg-rose-100 text-rose-800' : 'bg-amber-100 text-amber-800'}">
@@ -1117,7 +1070,7 @@ Kripya dispatch schedule confirm karein.`;
                             </tbody>
                             <tfoot class="bg-slate-50 border-t border-slate-200 font-semibold">
                                 <tr>
-                                    <td colspan="${currentMode === 'DIVISION' ? 5 : 6}" class="py-3 px-4 text-right text-xs uppercase text-slate-600">Total Items: ${items.length}</td>
+                                    <td colspan="${currentMode === 'DIVISION' ? 6 : 7}" class="py-3 px-4 text-right text-xs uppercase text-slate-600">Total Items: ${items.length}</td>
                                     <td colspan="2" class="py-3 px-4 text-right text-blue-700 font-bold bg-blue-50/70">${totalQty} Units</td>
                                     <td></td>
                                 </tr>
@@ -1161,7 +1114,6 @@ Kripya dispatch schedule confirm karein.`;
 
                 const matched = cleanProductsMaster.filter(p => 
                     p.itemName.toLowerCase().includes(query) || 
-                    p.allVariations.some(v => v.toLowerCase().includes(query)) ||
                     p.division.toLowerCase().includes(query) ||
                     p.categories.some(c => c.toLowerCase().includes(query))
                 );
@@ -1177,7 +1129,7 @@ Kripya dispatch schedule confirm karein.`;
                     <div class="bg-white border border-blue-200 rounded-xl shadow-md overflow-hidden">
                         <div class="px-4 py-2 bg-slate-100 text-xs text-slate-600 font-semibold flex justify-between">
                             <span>Matched Products (${matched.length})</span>
-                            <span class="text-blue-600">Live Combined Stock & Favourite Supplier</span>
+                            <span class="text-blue-600">Live Exact Stock & Favourite Supplier</span>
                         </div>
                         <div class="divide-y divide-slate-100">
                             ${matched.map(item => `
@@ -1190,13 +1142,16 @@ Kripya dispatch schedule confirm karein.`;
                                         <div class="flex flex-wrap items-center gap-1.5 mt-1">
                                             ${item.categories.map(c => `<span class="text-[10px] font-bold bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded">🏷️ ${c}</span>`).join('')}
                                         </div>
-                                        ${item.allVariations.length > 1 ? `<div class="text-[11px] text-emerald-700 font-medium">🔗 Merged Variations: ${item.allVariations.join(', ')}</div>` : ''}
                                         <div class="text-xs text-slate-600">Favourite Supplier: <b class="text-slate-900">${item.favSupplier}</b> (${item.orderCount} past bills)</div>
                                     </div>
                                     <div class="flex items-center space-x-3 text-center">
                                         <div class="px-3 py-1.5 rounded-lg bg-blue-50 border border-blue-200 min-w-[75px]">
                                             <span class="text-[10px] text-blue-700 block uppercase font-bold">Stock</span>
                                             <span class="text-sm font-extrabold text-blue-900">${item.closingStock}</span>
+                                        </div>
+                                        <div class="px-3 py-1.5 rounded-lg bg-indigo-50 border border-indigo-200 min-w-[80px]">
+                                            <span class="text-[10px] text-indigo-700 block uppercase font-bold">Max Sale</span>
+                                            <span class="text-sm font-extrabold text-indigo-900">${item.effectiveMonthlySale}</span>
                                         </div>
                                         <div class="px-3 py-1.5 rounded-lg bg-slate-100 border border-slate-200 min-w-[75px]">
                                             <span class="text-[10px] text-slate-500 block uppercase font-medium">Daily Sale</span>
@@ -1234,10 +1189,13 @@ Kripya dispatch schedule confirm karein.`;
             const exportData = items.map((it, idx) => ({
                 "S.No": idx + 1,
                 "Product Name": it.itemName,
-                "Merged Variations": it.allVariations.join(" | "),
                 "Division": it.division,
                 "Favourite Supplier": it.favSupplier,
                 "Closing Stock": it.closingStock,
+                "M1 Sale (Col E)": it.m1Sale,
+                "M2 Sale (Col F)": it.m2Sale,
+                "Net Duration Sale (Col K-L)": it.durationNetSale,
+                "Max Effective Sale": it.effectiveMonthlySale,
                 "Daily Sale": it.dailySale,
                 "Cover Days": it.coverDays,
                 "Critical Status": it.isCritical ? "CRITICAL (<5 Days)" : "NORMAL",
@@ -1261,10 +1219,13 @@ Kripya dispatch schedule confirm karein.`;
                 const exportData = itemsToExport.map((it, idx) => ({
                     "S.No": idx + 1,
                     "Product Name": it.itemName,
-                    "Merged Variations": it.allVariations.join(" | "),
                     "Division": it.division,
                     "Favourite Supplier": it.favSupplier,
                     "Closing Stock": it.closingStock,
+                    "M1 Sale (Col E)": it.m1Sale,
+                    "M2 Sale (Col F)": it.m2Sale,
+                    "Net Duration Sale (Col K-L)": it.durationNetSale,
+                    "Max Effective Sale": it.effectiveMonthlySale,
                     "Daily Sale": it.dailySale,
                     "Cover Days": it.coverDays,
                     "Critical Status": it.isCritical ? "CRITICAL (<5 Days)" : "NORMAL",
@@ -1279,7 +1240,6 @@ Kripya dispatch schedule confirm karein.`;
             });
         }
 
-        // Initialize Category Pills & Icons on ready
         renderCategoryPills();
         if (window.lucide) lucide.createIcons();
 
